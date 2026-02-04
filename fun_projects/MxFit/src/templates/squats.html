@@ -1,0 +1,42 @@
+
+
+{% extends "common.html" %}
+{% block body %}
+
+<center>
+    <div >
+         <h4>Squats / High Knees - Workout </h4>
+         <img style="width: 1920px; height: 1080px; " src="{{ url_for('video_rec',exercise='squats') }}">
+    </div>       
+    <p></p>
+        <p></p>
+        <p style="font-size:20px">  Make sure following keypoints are visible atleast on one side</p>
+        <p></p>
+        <p></p>
+        <div class="container"> 
+            <ul class="horizontal-list">
+                <li>Hip</li>
+                <li>Knee</li>
+                <li>Ankle</li>
+            </ul>
+        </div>
+        <p></p>
+        <h4>How to Perform Squats / High Knees</h4>
+        
+        <div class="gif-container">
+            <img style="width: 300px; height: auto; border: black;" src="https://fitnessprogramer.com/wp-content/uploads/2021/02/BODYWEIGHT-SUMO-SQUAT.gif" alt="How to do Squats">
+            <img style="width: 300px; height: auto; border:black" src="https://fitnessprogramer.com/wp-content/uploads/2021/08/High-Knee-Run.gif" alt="How to do High Knee">
+        </div>
+        
+</center>
+
+<script>
+    window.addEventListener("beforeunload", function() {
+        // Send request to stop inference when the page is closed or navigated away from
+        fetch("/stop_inference")
+            .then(response => response.json())
+            .then(data => console.log(data.status));
+    });
+</script>
+
+{% endblock %}

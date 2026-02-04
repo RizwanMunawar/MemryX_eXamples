@@ -1,0 +1,8 @@
+--extra-index-url https://developer.memryx.com/pip
+memryx
+fastapi~=0.115.6
+opencv-contrib-python~=4.10.0.84
+opencv-python~=4.10.0.84
+lap~=0.5.12
+cython-bbox~=0.1.5
+uvicorn~=0.34.0

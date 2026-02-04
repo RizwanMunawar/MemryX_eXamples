@@ -1,0 +1,45 @@
+{% extends "common.html" %}
+{% block body %}
+
+<center>
+    <div>
+        <h4>Bicep Curls - Workout</h4>
+        <div style="position: relative;">
+            <img style="width: 1920px; height: 1080px;" src="{{ url_for('video_rec', exercise='bicep_curl') }}">
+        </div>
+    </div>       
+
+    <form method="post">
+
+        <p></p>
+        <p></p>
+        <p style="font-size: 20px;">Make sure the following keypoints are visible at least on one side:</p>
+        <p></p>
+        <p></p>
+        <div class="container"> 
+            <ul class="horizontal-list">
+                <li>Shoulder</li>
+                <li>Elbow</li>
+                <li>Wrist</li>
+                <li>Hip</li>
+            </ul>
+        </div>
+        <p></p>
+        <h4>How to Perform Bicep Curls</h4>
+        
+        <div class="gif-container">
+            <img style="width: 300px; height: auto; border: black;" src="https://fitnessprogramer.com/wp-content/uploads/2021/02/Dumbbell-Curl.gif" alt="How to do Bicep Curls">
+            <img style="width: 300px; height: auto; border:black" src=" https://fitnessprogramer.com/wp-content/uploads/2022/04/Double-Arm-Dumbbell-Curl.gif" alt="How to do Bicep Curls">
+        </div>
+    </form>
+</center>
+
+<script>
+    window.addEventListener("beforeunload", function() {
+        fetch("/stop_inference")
+            .then(response => response.json())
+            .then(data => console.log(data.status));
+    });
+</script>
+
+{% endblock %}

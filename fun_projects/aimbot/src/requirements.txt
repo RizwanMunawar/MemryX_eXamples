@@ -1,0 +1,12 @@
+numpy~=1.26.4
+onnx~=1.16.1
+onnxruntime~=1.18.1
+onnxruntime-gpu~=1.18.1
+onnxruntime-directml~=1.18.1
+onnxsim~=0.4.36
+rich-argparse~=1.5.2
+opencv-python
+PyGetWindow
+pandas
+pywin32
+dxcam

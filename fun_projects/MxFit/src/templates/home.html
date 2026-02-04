@@ -1,0 +1,24 @@
+
+{% extends "common.html" %}
+{% block body %}
+
+<center>
+    <div style="width: 1177px; height: 673px; overflow: hidden">
+
+        <img src="{{ url_for('static', path='images/penguins.png') }}" alt="Logo">
+    </div>       
+    <form method="post">
+
+      <p style="font-size:20px"> Choose an Exercise </p>
+      <!-- <input type="submit" name="bicep curl" value="bicepcurl"> -->
+      <a href="bicepcurl" class="btn btn-info" role="button">Bicep Curl </a>
+      <a href="frontraise" class="btn btn-info" role="button">Front Raises </a>
+      <a href="squats" class="btn btn-info" role="button">Squats / High Knees</a>
+      <a href="shoulderpress" class="btn btn-info" role="button">Shoulder Press </a>
+      <p></p>
+    </form>
+</center>
+
+{% endblock %}
+
+

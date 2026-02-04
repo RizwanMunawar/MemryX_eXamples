@@ -1,0 +1,46 @@
+
+
+{% extends "common.html" %}
+{% block body %}
+
+<center>
+    <div >
+         <h4> Shoulder Press - Workout </h4>
+         <img style="width: 1920px; height: 1080px; " src="{{ url_for('video_rec',exercise='shoulder_press') }}">
+    </div>       
+    
+    <form method="post">
+        <form>
+            <p></p>
+            <p></p>
+            <p style="font-size:20px"> Make sure following keypoints are visible </p>
+            <p></p>
+            <p></p>
+            <div class="container"> 
+                <ul class="horizontal-list">
+                    <li>Shoulder</li>
+                    <li>Elbow</li>
+                    <li>Wrist</li>
+                </ul>
+            </div>
+            <p></p>
+            <h4>How to Perform Shoulder Press</h4>
+        
+            <div class="gif-container">
+                <img style="width: 300px; height: auto; border: black;" src="https://fitnessprogramer.com/wp-content/uploads/2023/09/Standing-Dumbbell-Overhead-Press.gif" alt="How to do Shoulder Press">
+                <img style="width: 300px; height: auto; border:black" src="https://fitnessprogramer.com/wp-content/uploads/2021/02/Dumbbell-Shoulder-Press.gif" alt="How to do Shoulder Press">
+            </div>
+            
+    </form>
+</center>
+
+<script>
+    window.addEventListener("beforeunload", function() {
+        // Send request to stop inference when the page is closed or navigated away from
+        fetch("/stop_inference")
+            .then(response => response.json())
+            .then(data => console.log(data.status));
+    });
+</script>
+
+{% endblock %}

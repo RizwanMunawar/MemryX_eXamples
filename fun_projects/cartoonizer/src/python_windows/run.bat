@@ -1,0 +1,1 @@
+.\311env\Scripts\python run_facial_cartoonizer.py

@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+ 
+    <head>
+        <title>Ekalaiva</title>
+        <meta Http-Equiv="Cache-Control" Content="no-cache">
+        <meta Http-Equiv="Pragma" Content="no-cache">
+        <meta Http-Equiv="Expires" Content="0">
+        <meta Http-Equiv="Pragma-directive: no-cache">
+        <meta Http-Equiv="Cache-directive: no-cache">
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+
+        <!-- <link rel="stylesheet" type="text/css" href="/static/styles.css"> -->
+        <style>
+        @import url(http://fonts.googleapis.com/css?family=Amatic+SC:700);
+
+        
+        body{
+            text-align: center;    
+        }
+        h1{
+            font-family: 'Amatic SC', cursive;
+            font-weight: normal;
+            color: #8ac640;
+            font-size: 5em;
+        }
+
+
+        .container {
+                    display: flex; /* Use flexbox for centering */
+                    justify-content: center; /* Center horizontally */
+                    align-items: top; /* Center vertically */
+                    height: 2vh; /* Full viewport height */
+                }
+
+                /* Style list to display inline with visible black bullets */
+        .horizontal-list {
+            list-style-type: disc; /* Bullet style */
+            list-style-position: inside; /* Ensures bullet is inside each item */
+            padding: 0;
+            margin: 0;
+            display: flex; /* Makes the list horizontal */
+            gap: 50px; /* Space between bullets */
+            color: black; /* Set bullet color to black */
+        }
+                
+        .horizontal-list li {
+            display: inline; /* Ensures list items are inline */
+            font-weight: bold; /* Makes text bold */
+            position: relative; /* Position relative for the bullet */
+        }
+
+                /* Create a custom bullet */
+        .horizontal-list li::before {
+            content: ''; /* Empty content for the bullet */
+            position: absolute; /* Absolute position to customize bullet */
+            left: -20px; /* Adjust bullet position */
+            top: 0; /* Align bullet with text */
+            width: 10px; /* Bullet width */
+            height: 10px; /* Bullet height */
+            border-radius: 50%; /* Make it circular */
+            background-color: black; /* Bullet color */
+        }
+
+
+        .gif-container {
+            margin: 20px 0; /* Add spacing above and below the GIF section */
+            text-align: center; /* Center align the GIF and text */
+            /* display: flex; */
+            gap: 50px;
+        }
+
+
+        </style>
+    
+    </head>
+
+    <body>
+        <div>
+            <h1> MxFit </h1>
+            <a href="/home" class="btn btn-info" role="button" style="position: absolute; top: 20px; right: 100px;">
+                <span class="glyphicon glyphicon-home"></span>
+            </a>
+        </div>
+    {% block body %}{% endblock %}
+    
+    </body>
+</html>
+
+

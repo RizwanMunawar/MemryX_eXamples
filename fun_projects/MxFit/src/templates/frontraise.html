@@ -1,0 +1,43 @@
+{% extends "common.html" %}
+{% block body %}
+
+<center>
+    <div >
+        <h4> Front Raises - Workout </h4>
+        <img style="width: 1920px; height: 1080px; " src="{{ url_for('video_rec',exercise='front_raises') }}">
+    </div>      
+    <form method="post">
+        <p></p>
+        <p></p>
+        <p style="font-size:20px"> Make sure following keypoints are visible atleast on one side</p>
+        <p></p>
+        <p></p>
+        <div class="container"> 
+            <ul class="horizontal-list">
+                <li>Wrist</li>
+                <li>Shoulder</li>
+                <li>Hip</li>
+                <li>Elbow</li>
+            </ul>
+        </div>
+        <p></p>
+        <h4>How to Perform Front Raises</h4>
+        
+            <div class="gif-container">
+                <img style="width: 300px; height: auto; border: black;" src="https://fitnessprogramer.com/wp-content/uploads/2021/06/Alternating-Dumbbell-Front-Raise.gif" alt="How to do Front Raises">
+                <img style="width: 300px; height: auto; border:black" src="https://fitnessprogramer.com/wp-content/uploads/2022/06/Dumbbell-Seated-Alternate-Front-Raises.gif" alt="How to do Front Raises">
+            </div>
+    </form>
+</center>
+
+<script>
+    window.addEventListener("beforeunload", function() {
+        // Send request to stop inference when the page is closed or navigated away from
+        fetch("/stop_inference")
+            .then(response => response.json())
+            .then(data => console.log(data.status));
+    });
+</script>
+
+{% endblock %}
+

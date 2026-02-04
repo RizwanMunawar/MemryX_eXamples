@@ -1,0 +1,12 @@
+**/build/
+*.smake
+*.o
+*.log
+*.tmp
+*.swp
+.DS_Store
+**/.vscode
+**/__pycache__
+*.zip
+# Ignore the models directory and its contents
+models/
