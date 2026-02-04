@@ -12,15 +12,15 @@ Follow these general steps to contribute to the repository:
 
 3. **Create a Branch**: After forking the repository, create a new branch in your fork for your application or feature. This branch will isolate your changes from the main codebase until the work is complete and reviewed.
 
-4. **Follow the File Structure**: Ensure that your application follows the standard file structure as outlined in the [File Structure Guidelines](file_structure.md). Proper organization is essential to maintain consistency across the repository.
+4. **Follow the File Structure**: Ensure that your application follows the standard file structure as outlined in the [File Structure Guidelines](guidelines/file_structure.md). Proper organization is essential to maintain consistency across the repository.
 
-5. **Write the README**: Use the [README Template](readme_template.md) to create a clear, structured `README.md` for your example. Include all relevant details such as installation steps, running the application, and any dependencies.
+5. **Write the README**: Use the [README Template](guidelines/readme_template.md) to create a clear, structured `README.md` for your example. Include all relevant details such as installation steps, running the application, and any dependencies.
 
 6. **Submit a Pull Request**: Once your example application is ready and has been thoroughly tested, submit a pull request from your forked repository. Ensure that your application passes any relevant checks or tests, and include a clear description of your contribution in the pull request.
 
 ## 2. File Structure Guidelines
 
-All example applications must adhere to the defined file structure to ensure uniformity across the repository. Please refer to the [File Structure Guidelines](file_structure.md) for detailed information.
+All example applications must adhere to the defined file structure to ensure uniformity across the repository. Please refer to the [File Structure Guidelines](guidelines/file_structure.md) for detailed information.
 
 Each example application should include:
 
@@ -29,18 +29,18 @@ Each example application should include:
 - A `models/` folder for storing DFP files and any pre/post-processing models required by the application.
 - An `assets/` folder containing any additional non-source files, such as configuration files, GUI files, or auxiliary data.
 
-Refer to the [File Structure Guidelines](file_structure.md) for more details.
+Refer to the [File Structure Guidelines](guidelines/file_structure.md) for more details.
 
 ## 3. README Template
 
-The README file is essential for providing users with the necessary information to run the example application. Use the [README Template](readme_template.md) to ensure your README includes the following sections:
+The README file is essential for providing users with the necessary information to run the example application. Use the [README Template](guidelines/readme_template.md) to ensure your README includes the following sections:
 
 - Overview of the application.
 - Requirements and dependencies.
 - Step-by-step instructions for running the application.
 - Any relevant links to external resources (e.g., pre-compiled DFP files).
 
-You can find the full README template [here](readme_template.md).
+You can find the full README template [here](guidelines/readme_template.md).
 
 ## 4. Licensing
 
