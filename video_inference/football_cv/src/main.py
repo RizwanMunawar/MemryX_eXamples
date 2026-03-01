@@ -269,6 +269,7 @@ class VideoPipelineWorker(QObject):
         if self._stop_requested:
             return
 
+        elapsed_ms = -1
         # ---------- Throughput FPS using ALL past frames ----------
         if len(time_stamps) >= 2:
             total_frames = len(time_stamps) - 1
@@ -375,7 +376,22 @@ if __name__ == "__main__":
     output_path = args.output
 
     # Saving-related: get video metadata for writer and for pipeline/display fps
+    # --------------------------------
+    # Validate input video file
+    # --------------------------------
+    if not os.path.isfile(video_path):
+        raise FileNotFoundError(
+            f"Video file not found: '{video_path}'. "
+            f"Please check the path and try again."
+        )
+
     cap_meta = cv2.VideoCapture(video_path)
+
+    if not cap_meta.isOpened():
+        raise RuntimeError(
+            f"Failed to open video file: '{video_path}'. "
+            f"The file may be corrupted or in an unsupported format."
+        )
     fps = cap_meta.get(cv2.CAP_PROP_FPS)
 
     w = int(cap_meta.get(cv2.CAP_PROP_FRAME_WIDTH))
