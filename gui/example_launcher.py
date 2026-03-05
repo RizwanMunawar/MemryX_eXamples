@@ -19,6 +19,7 @@ import json
 import os
 import re
 import socket
+import select
 import subprocess
 import psutil
 import logging
@@ -433,11 +434,12 @@ class ReadmeParser:
                         return True
             return False
 
-        def process_item(title, readme_rel, tutorial_url, description, models, code_langs, os_list, preview_src):
+        def process_item(title, readme_rel, tutorial_url, description, models, code_langs, os_list, preview_src, blacklisted=False):
             has_run_sh = False
             run_sh_path = None
             
-            if readme_rel:
+            # Blacklisted apps should still be visible, but never launchable from the UI.
+            if readme_rel and not blacklisted:
                 example_dir = REPO_ROOT / Path(readme_rel).parent
                 run_sh_file = example_dir / "run.sh"
                 
@@ -493,14 +495,16 @@ class ReadmeParser:
                 for td in tds:
                     if not td.get_text().strip(): continue
                     title, readme_rel, tutorial_url = self._parse_application_cell(td)
-                    if not title or is_blacklisted(title, readme_rel): continue
+                    if not title: continue
+                    blacklisted = is_blacklisted(title, readme_rel)
                     item = process_item(
                         title, readme_rel, tutorial_url,
                         self._extract_description(td),
                         self._extract_models(td),
                         self._parse_code_langs(td),
                         self._parse_os(td),
-                        self._parse_preview(td)
+                        self._parse_preview(td),
+                        blacklisted=blacklisted,
                     )
                     items.append(item)
         else:
@@ -518,14 +522,15 @@ class ReadmeParser:
                 if not tds: continue
                 app_cell = cell(row, "Application") or cell(row, "Task")
                 title, readme_rel, tutorial_url = self._parse_application_cell(app_cell)
-                if is_blacklisted(title, readme_rel): continue
+                blacklisted = is_blacklisted(title, readme_rel)
                 item = process_item(
                     title, readme_rel, tutorial_url,
                     self._clean_text(cell(row, "Description").get_text()) if cell(row, "Description") else "",
                     self._split_models(cell(row, "Models") or cell(row, "Model")),
                     self._parse_code_langs(cell(row, "Code")),
                     self._parse_os(cell(row, "OS")),
-                    self._parse_preview(cell(row, "Preview"))
+                    self._parse_preview(cell(row, "Preview")),
+                    blacklisted=blacklisted,
                 )
                 items.append(item)
         return items
@@ -655,7 +660,30 @@ class ReadmeParser:
 
 class ProcessManager:
     """Manages running example processes with graceful shutdown."""
-    
+
+    STARTUP_FAILURE_WINDOW_SECONDS = 5.0
+    STARTUP_SILENT_TIMEOUT_SECONDS = 20.0
+    OUTPUT_SELECT_TIMEOUT_SECONDS = 0.2
+
+    FAILURE_PATTERNS = {
+        'segfault': ['segmentation fault', 'sigsegv', 'core dumped'],
+        'camera': ['no camera', 'camera not found', 'cannot open camera', 'video capture'],
+        'qt_libs': ['qt.qpa', 'could not load the qt platform plugin', 'libqt', 'display'],
+        'dfp': ['dfp not found', 'invalid dfp', 'cannot load dfp', 'model file'],
+        'module_lock': ['module already in use', 'device busy', 'resource busy'],
+        'display_thread': ['display thread', 'gui thread', 'window creation failed'],
+    }
+
+    FATAL_OUTPUT_HINTS = [
+        'segmentation fault',
+        'could not load the qt platform plugin',
+        'module already in use',
+        'device busy',
+        'resource busy',
+        'dfp not found',
+        'cannot open camera',
+    ]
+
     def __init__(self):
         self.running_proc = None
         self.current_example_name = None
@@ -667,6 +695,8 @@ class ProcessManager:
         self.debug_mode = False  # Debug mode flag
         self.debug_listeners = []  # SSE clients listening for debug output
         self.max_debug_lines = 1000  # Maximum number of debug lines to keep
+        self._stdout_buffer = ""
+        self.stop_requested = False
         
         # Initialize lock file path
         self.lock_file = Path("/tmp/memryx_example_running.lock")
@@ -695,61 +725,184 @@ class ProcessManager:
                 return True
             except queue.Full:
                 return False
-    
+
     def is_running(self) -> bool:
         """Check if a process is running and clean up if it finished"""
-        if self.running_proc is None:
+        proc = self.running_proc
+        if proc is None:
             return False
-        
-        # Poll the process to update its status
-        poll_result = self.running_proc.poll()
-        
-        # If process finished, clean up
-        if poll_result is not None:
-            exit_code = poll_result
+
+        exit_code = proc.poll()
+        if exit_code is not None:
             print(f"Process exited with code {exit_code}")
-            
-            # Analyze exit reason
             if exit_code != 0:
-                self._analyze_process_failure(exit_code)
-            
-            self.cleanup()
+                if self.stop_requested:
+                    print("[INFO] Process exited after user stop request")
+                    self.cleanup()
+                else:
+                    errors, message = self._analyze_process_failure(exit_code)
+                    self._emit_failure_status(message, exit_code=exit_code, errors=errors)
+                    self.cleanup(emit_status=False, clear_output=False)
+            else:
+                self.cleanup()
             return False
-        
+
         return True
-    
-    def _analyze_process_failure(self, exit_code: int):
-        """Analyze process output to determine failure reason"""
-        output_text = '\n'.join(self.process_output[-100:])  # Last 100 lines
-        
-        error_patterns = {
-            'segfault': ['segmentation fault', 'sigsegv', 'core dumped'],
-            'camera': ['no camera', 'camera not found', 'cannot open camera', 'video capture'],
-            'qt_libs': ['qt.qpa', 'could not load the qt platform plugin', 'libqt', 'display'],
-            'dfp': ['dfp not found', 'invalid dfp', 'cannot load dfp', 'model file'],
-            'module_lock': ['module already in use', 'device busy', 'resource busy'],
-            'display_thread': ['display thread', 'gui thread', 'window creation failed']
-        }
-        
+
+    def _analyze_process_failure(self, exit_code: int) -> Tuple[List[str], str]:
+        """Analyze captured output and return classified failure details."""
+        output_text = '\n'.join(self.process_output[-100:]).lower()
+
         detected_errors = []
-        for error_type, patterns in error_patterns.items():
-            if any(pattern in output_text.lower() for pattern in patterns):
+        for error_type, patterns in self.FAILURE_PATTERNS.items():
+            if any(pattern in output_text for pattern in patterns):
                 detected_errors.append(error_type)
-        
+
         if detected_errors:
+            message = f"Process failed: {', '.join(detected_errors)} (exit code {exit_code})"
             print(f"[FAILURE ANALYSIS] Detected errors: {', '.join(detected_errors)}")
-            print(f"[FAILURE ANALYSIS] Exit code: {exit_code}")
-            
-            # Broadcast failure event to SSE listeners
-            self._broadcast_status_change({
-                'status': 'failed',
-                'exit_code': exit_code,
-                'errors': detected_errors,
-                'message': f"Process failed: {', '.join(detected_errors)}"
-            })
         else:
-            print(f"[FAILURE ANALYSIS] Process exited with code {exit_code}, no specific error pattern detected")
-    
+            message = f"Process exited with code {exit_code}"
+            print(f"[FAILURE ANALYSIS] {message}, no specific error pattern detected")
+
+        return detected_errors, message
+
+    def _emit_failure_status(
+        self,
+        message: str,
+        exit_code: Optional[int] = None,
+        errors: Optional[List[str]] = None,
+    ) -> None:
+        payload = {
+            'status': 'failed',
+            'example_name': self.current_example_name,
+            'message': message,
+        }
+        if exit_code is not None:
+            payload['exit_code'] = exit_code
+        if errors:
+            payload['errors'] = errors
+        self._broadcast_status_change(payload)
+
+    def _terminate_process_tree(self, pid: int, timeout: int = 5) -> bool:
+        """Terminate a process tree and force-kill remaining processes if needed."""
+        try:
+            proc = psutil.Process(pid)
+        except psutil.NoSuchProcess:
+            return True
+
+        try:
+            children = proc.children(recursive=True)
+        except psutil.NoSuchProcess:
+            return True
+
+        all_procs = children + [proc]
+
+        for child in children:
+            try:
+                child.terminate()
+            except (psutil.NoSuchProcess, psutil.AccessDenied):
+                pass
+
+        try:
+            proc.terminate()
+        except (psutil.NoSuchProcess, psutil.AccessDenied):
+            pass
+
+        _, alive = psutil.wait_procs(all_procs, timeout=timeout)
+        for still_running in alive:
+            try:
+                still_running.kill()
+            except (psutil.NoSuchProcess, psutil.AccessDenied):
+                pass
+
+        if alive:
+            psutil.wait_procs(alive, timeout=2)
+
+        for maybe_alive in alive:
+            try:
+                if maybe_alive.is_running():
+                    return False
+            except (psutil.NoSuchProcess, psutil.AccessDenied):
+                continue
+        return True
+
+    def _record_output_line(self, line: str) -> bool:
+        """Store one output line. Returns True when a fatal hint is detected."""
+        line = line.rstrip()
+        if not line:
+            return False
+
+        timestamp = time.strftime('%H:%M:%S')
+        formatted_line = f"[{timestamp}] {line}"
+        self.process_output.append(formatted_line)
+
+        max_lines = self.max_debug_lines if self.debug_mode else 500
+        if len(self.process_output) > max_lines:
+            self.process_output = self.process_output[-max_lines:]
+
+        if self.debug_mode:
+            self._broadcast_debug_output(formatted_line)
+
+        line_lower = line.lower()
+        if any(err in line_lower for err in ['error', 'failed', 'exception', 'segfault', 'abort']):
+            error_msg = f"[HEALTH] Detected error in output: {line}"
+            print(error_msg)
+            if self.debug_mode:
+                self._broadcast_debug_output(f"🚨 {error_msg}")
+
+        return any(hint in line_lower for hint in self.FATAL_OUTPUT_HINTS)
+
+    def _read_available_output(self, proc: subprocess.Popen) -> Tuple[int, Optional[str]]:
+        """Read available stdout lines without blocking the monitor loop."""
+        if proc.stdout is None:
+            return 0, None
+
+        lines_read = 0
+        fatal_line = None
+        select_timeout = self.OUTPUT_SELECT_TIMEOUT_SECONDS
+        stdout_fd = proc.stdout.fileno()
+
+        while True:
+            try:
+                ready, _, _ = select.select([stdout_fd], [], [], select_timeout)
+            except (OSError, ValueError):
+                break
+
+            if not ready:
+                break
+
+            try:
+                chunk = os.read(stdout_fd, 4096)
+            except BlockingIOError:
+                break
+            except OSError:
+                break
+
+            if not chunk:
+                if self._stdout_buffer:
+                    lines_read += 1
+                    if self._record_output_line(self._stdout_buffer):
+                        fatal_line = self._stdout_buffer
+                    self._stdout_buffer = ""
+                break
+
+            self._stdout_buffer += chunk.decode(errors='replace')
+            while True:
+                newline_index = self._stdout_buffer.find('\n')
+                if newline_index == -1:
+                    break
+                line = self._stdout_buffer[:newline_index]
+                self._stdout_buffer = self._stdout_buffer[newline_index + 1:]
+                lines_read += 1
+                if self._record_output_line(line):
+                    fatal_line = line
+
+            # After first read, immediately drain remaining ready lines.
+            select_timeout = 0.0
+
+        return lines_read, fatal_line
+
     def start_example(self, script_path: Path, example_name: str) -> Optional[subprocess.Popen]:
         # Clean up any previous process first
         if self.is_running():
@@ -766,6 +919,7 @@ class ProcessManager:
             # Create lock file
             self.lock_file.touch()
             self.current_example_name = example_name
+            self.stop_requested = False
             
             print(f"Starting example: {example_name}")
             print(f"Working directory: {script_path.parent}")
@@ -774,14 +928,14 @@ class ProcessManager:
             # Start process with proper GUI support
             # Keep DISPLAY and terminal connection for OpenCV/GUI apps
             env = os.environ.copy()
-            
+
             # Ensure DISPLAY is set for GUI applications
             if 'DISPLAY' not in env:
                 env['DISPLAY'] = ':0'
-            
+
             # Clear process output buffer
             self.process_output = []
-            
+
             # Log startup details in debug mode
             if self.debug_mode:
                 startup_msg = f"🚀 Starting {example_name}\n" + \
@@ -801,10 +955,17 @@ class ProcessManager:
                 bufsize=1,  # Line buffered
                 start_new_session=False  # Keep terminal session for GUI
             )
-            
+
+            if proc.stdout:
+                try:
+                    os.set_blocking(proc.stdout.fileno(), False)
+                except (AttributeError, OSError, ValueError):
+                    pass
+            self._stdout_buffer = ""
+
             self.running_proc = proc
             print(f"[SUCCESS] Process started with PID: {proc.pid}")
-            
+
             # Start health monitoring and output capture
             self.stop_monitor.clear()
             self.health_monitor_thread = threading.Thread(
@@ -820,172 +981,123 @@ class ProcessManager:
                 'example_name': example_name,
                 'pid': proc.pid
             })
-            
+
             return proc
-            
+
         except FileNotFoundError:
-            print(f"[ERROR] Script not found: {script_path}")
-            self.cleanup()
+            message = f"Script not found: {script_path}"
+            print(f"[ERROR] {message}")
+            self._emit_failure_status(message)
+            self.cleanup(emit_status=False)
             return None
         except PermissionError:
-            print(f"[ERROR] Permission denied: {script_path}")
-            self.cleanup()
+            message = f"Permission denied: {script_path}"
+            print(f"[ERROR] {message}")
+            self._emit_failure_status(message)
+            self.cleanup(emit_status=False)
             return None
         except Exception as e:
-            print(f"[ERROR] Failed to start example: {e}")
+            message = f"Failed to start example: {e}"
+            print(f"[ERROR] {message}")
             import traceback
             traceback.print_exc()
-            self.cleanup()
+            self._emit_failure_status(message)
+            self.cleanup(emit_status=False)
             return None
-    
+
     def stop_gracefully(self, timeout: int = 5) -> bool:
         if not self.running_proc:
             print("No process to stop")
             return False
-        
+
         try:
-            print(f"Stopping example: {self.current_example_name} (PID: {self.running_proc.pid})")
-            
-            try:
-                proc = psutil.Process(self.running_proc.pid)
-            except psutil.NoSuchProcess:
-                print("Process already finished")
+            pid = self.running_proc.pid
+            print(f"Stopping example: {self.current_example_name} (PID: {pid})")
+            self.stop_requested = True
+            self.stop_monitor.set()
+            stopped = self._terminate_process_tree(pid, timeout=timeout)
+            if stopped:
+                print("[SUCCESS] Process terminated")
+            else:
+                print("[WARNING] Some processes may still be alive")
+            if self.running_proc is not None:
                 self.cleanup()
-                return True
-            
-            # Get all child processes before terminating
-            try:
-                children = proc.children(recursive=True)
-                print(f"Found {len(children)} child process(es)")
-            except psutil.NoSuchProcess:
-                children = []
-            
-            # Terminate children first
-            for child in children:
-                try:
-                    print(f"Terminating child PID {child.pid}")
-                    child.terminate()
-                except (psutil.NoSuchProcess, psutil.AccessDenied) as e:
-                    print(f"Could not terminate child {child.pid}: {e}")
-            
-            # Terminate main process
-            try:
-                proc.terminate()
-            except psutil.NoSuchProcess:
-                print("Main process already gone")
-                self.cleanup()
-                return True
-            
-            # Wait for graceful shutdown
-            try:
-                proc.wait(timeout=timeout)
-                print(f"[SUCCESS] Process terminated gracefully")
-                self.cleanup()
-                return True
-            except psutil.TimeoutExpired:
-                print(f"[WARNING] Timeout after {timeout}s, forcing kill...")
-                
-                # Force kill children
-                for child in children:
-                    try:
-                        if child.is_running():
-                            print(f"Killing child PID {child.pid}")
-                            child.kill()
-                    except (psutil.NoSuchProcess, psutil.AccessDenied):
-                        pass
-                
-                # Force kill main process
-                try:
-                    if proc.is_running():
-                        proc.kill()
-                        proc.wait(timeout=2)
-                except psutil.NoSuchProcess:
-                    pass
-                
-                print("[SUCCESS] Process killed")
-                self.cleanup()
-                return True
-                
+            return stopped
+
         except Exception as e:
             print(f"[ERROR] Error stopping process: {e}")
             import traceback
             traceback.print_exc()
-            self.cleanup()
+            if self.running_proc is not None:
+                self.cleanup()
             return False
-    
+
     def _monitor_process_health(self, proc: subprocess.Popen):
-        """Monitor process health after spawn to detect immediate failures"""
-        startup_window = 5  # Monitor first 5 seconds for immediate failures
-        check_interval = 0.5  # Check every 500ms
-        
+        """Monitor process health and ensure failed runs auto-exit."""
         start_time = time.time()
-        line_count = 0
-        
+        output_seen = False
+
         try:
             while not self.stop_monitor.is_set():
-                # Check if process is still alive
-                if proc.poll() is not None:
-                    elapsed = time.time() - start_time
-                    if elapsed < startup_window:
-                        msg = f"[HEALTH] Process died within {elapsed:.1f}s of startup - likely failed"
-                        print(msg)
-                        if self.debug_mode:
-                            self._broadcast_debug_output(msg)
-                        self._broadcast_status_change({
-                            'status': 'failed',
-                            'message': f'Process crashed {elapsed:.1f}s after startup',
-                            'exit_code': proc.returncode
-                        })
+                # Another run replaced this process; stop monitoring this one.
+                if proc is not self.running_proc:
                     break
-                
-                # Capture output lines
-                try:
-                    line = proc.stdout.readline()
-                    if line:
-                        line = line.rstrip()
-                        timestamp = time.strftime('%H:%M:%S')
-                        formatted_line = f"[{timestamp}] {line}"
-                        
-                        self.process_output.append(formatted_line)
-                        line_count += 1
-                        
-                        # Broadcast to debug listeners if debug mode is enabled
-                        if self.debug_mode:
-                            self._broadcast_debug_output(formatted_line)
-                        
-                        # Keep only last lines to prevent memory issues
-                        max_lines = self.max_debug_lines if self.debug_mode else 500
-                        if len(self.process_output) > max_lines:
-                            self.process_output = self.process_output[-max_lines:]
-                        
-                        # Check for immediate error patterns
-                        line_lower = line.lower()
-                        if any(err in line_lower for err in ['error', 'failed', 'exception', 'segfault', 'abort']):
-                            error_msg = f"[HEALTH] Detected error in output: {line}"
-                            print(error_msg)
-                            if self.debug_mode:
-                                self._broadcast_debug_output(f"🚨 {error_msg}")
-                except Exception:
-                    pass
-                
-                # After startup window, check less frequently
+
+                lines_read, fatal_line = self._read_available_output(proc)
+                if lines_read > 0:
+                    output_seen = True
+
+                if fatal_line:
+                    if self.stop_requested:
+                        self.cleanup()
+                        break
+                    message = f"Fatal runtime error detected: {fatal_line}"
+                    print(f"[HEALTH] {message}")
+                    self._emit_failure_status(message, errors=['fatal_output'])
+                    self._terminate_process_tree(proc.pid, timeout=2)
+                    self.cleanup(emit_status=False, clear_output=False)
+                    break
+
+                exit_code = proc.poll()
+                if exit_code is not None:
+                    if exit_code != 0:
+                        if self.stop_requested:
+                            self.cleanup()
+                        else:
+                            elapsed = time.time() - start_time
+                            errors, message = self._analyze_process_failure(exit_code)
+                            if elapsed < self.STARTUP_FAILURE_WINDOW_SECONDS and not errors:
+                                message = f"Process crashed {elapsed:.1f}s after startup (exit code {exit_code})"
+                            self._emit_failure_status(message, exit_code=exit_code, errors=errors)
+                            self.cleanup(emit_status=False, clear_output=False)
+                    else:
+                        self.cleanup()
+                    break
+
                 elapsed = time.time() - start_time
-                if elapsed > startup_window:
-                    if line_count == 0 and elapsed > 3:
-                        warning_msg = f"[HEALTH] Warning: No output after {elapsed:.1f}s, process may be hung"
-                        print(warning_msg)
-                        if self.debug_mode:
-                            self._broadcast_debug_output(f"⚠️ {warning_msg}")
-                    time.sleep(2)  # Check every 2 seconds after startup
-                else:
-                    time.sleep(check_interval)
-        
+                if not output_seen and elapsed >= self.STARTUP_SILENT_TIMEOUT_SECONDS:
+                    message = (
+                        f"No output detected for {int(self.STARTUP_SILENT_TIMEOUT_SECONDS)}s after launch; "
+                        "treating this as a startup failure and stopping the example."
+                    )
+                    print(f"[HEALTH] {message}")
+                    self._emit_failure_status(message, errors=['startup_timeout'])
+                    self._terminate_process_tree(proc.pid, timeout=2)
+                    self.cleanup(emit_status=False, clear_output=False)
+                    break
+
+                time.sleep(0.2)
+
         except Exception as e:
             error_msg = f"[HEALTH] Monitor thread error: {e}"
             print(error_msg)
             if self.debug_mode:
                 self._broadcast_debug_output(f"💥 {error_msg}")
-    
+            if proc is self.running_proc and not self.stop_requested:
+                self._emit_failure_status(error_msg, errors=['monitor_error'])
+                self._terminate_process_tree(proc.pid, timeout=2)
+                self.cleanup(emit_status=False, clear_output=False)
+
     def _broadcast_status_change(self, status_data: dict):
         """Broadcast status change to all SSE listeners"""
         self.last_status = dict(status_data)
@@ -1025,41 +1137,55 @@ class ProcessManager:
             print("[DEBUG] Debug mode disabled")
             # Clear debug listeners
             self.debug_listeners.clear()
-    
+
     def get_debug_output(self) -> list:
         """Get current process output for debugging"""
         return self.process_output.copy() if self.process_output else []
-    
-    def cleanup(self):
+
+    def cleanup(self, emit_status: bool = True, clear_output: bool = True):
         """Clean up process state and lock file"""
-        # Stop health monitor
+        example_name = self.current_example_name
+        self.stop_monitor.set()
+
         if self.health_monitor_thread and self.health_monitor_thread.is_alive():
-            self.stop_monitor.set()
-            self.health_monitor_thread.join(timeout=2)
-        
+            # Avoid joining this thread from within itself.
+            if threading.current_thread() is not self.health_monitor_thread:
+                self.health_monitor_thread.join(timeout=2)
+        self.health_monitor_thread = None
+
         if self.lock_file.exists():
             try:
                 self.lock_file.unlink()
                 print("Removed lock file")
             except Exception as e:
                 print(f"Warning: Could not remove lock file: {e}")
-        
+
         if self.running_proc:
-            # Reap zombie process if needed
             try:
                 self.running_proc.poll()
             except Exception:
                 pass
-        
-        # Broadcast stopped status
-        self._broadcast_status_change({
-            'status': 'stopped',
-            'example_name': self.current_example_name
-        })
-        
+
+            try:
+                if self.running_proc.stdout:
+                    self.running_proc.stdout.close()
+            except Exception:
+                pass
+
         self.running_proc = None
         self.current_example_name = None
-        self.process_output = []
+        self._stdout_buffer = ""
+        self.stop_requested = False
+
+        if clear_output:
+            self.process_output = []
+
+        if emit_status:
+            self._broadcast_status_change({
+                'status': 'stopped',
+                'example_name': example_name
+            })
+
         print("Cleanup complete")
 
 ###############################################################################
@@ -1267,11 +1393,14 @@ def api_kill():
         return jsonify({'success': False, 'error': 'No example is running'}), 400
     
     try:
+        process_manager.stop_requested = True
+        process_manager.stop_monitor.set()
         proc = psutil.Process(process_manager.running_proc.pid)
         for child in proc.children(recursive=True):
             child.kill()
         proc.kill()
-        process_manager.cleanup()
+        if process_manager.running_proc is not None:
+            process_manager.cleanup()
         return jsonify({'success': True})
     except Exception as e:
         return jsonify({'success': False, 'error': str(e)}), 500
@@ -1280,10 +1409,29 @@ def api_kill():
 def api_status():
     """Get process status (for compatibility, prefer SSE)"""
     is_running = process_manager.is_running()
+    last_status = process_manager.last_status or {}
+
+    if is_running:
+        status = 'running'
+        example_name = process_manager.current_example_name
+        message = None
+        exit_code = None
+        errors = []
+    else:
+        status = last_status.get('status', 'idle')
+        example_name = last_status.get('example_name')
+        message = last_status.get('message')
+        exit_code = last_status.get('exit_code')
+        errors = last_status.get('errors') or []
+
     return jsonify({
         'is_running': is_running,
-        'example_name': process_manager.current_example_name if is_running else None,
-        'chip_available': chip_available
+        'status': status,
+        'example_name': example_name,
+        'message': message,
+        'exit_code': exit_code,
+        'errors': errors,
+        'chip_available': chip_available,
     })
 
 @app.route('/api/status/stream')
@@ -1297,12 +1445,21 @@ def api_status_stream():
         try:
             # Send initial status
             is_running = process_manager.is_running()
-            initial_status = {
-                'status': 'running' if is_running else 'idle',
-                'example_name': process_manager.current_example_name,
-                'chip_available': chip_available,
-                'debug_mode': process_manager.debug_mode
-            }
+            if is_running:
+                initial_status = {
+                    'status': 'running',
+                    'example_name': process_manager.current_example_name,
+                }
+            elif process_manager.last_status:
+                initial_status = dict(process_manager.last_status)
+            else:
+                initial_status = {
+                    'status': 'idle',
+                    'example_name': None,
+                }
+
+            initial_status['chip_available'] = chip_available
+            initial_status['debug_mode'] = process_manager.debug_mode
             yield sse_data(initial_status)
             
             # Stream updates

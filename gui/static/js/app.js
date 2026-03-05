@@ -3,6 +3,8 @@ let currentCategory = 'all';
 let searchQuery = '';
 let allCategories = [];
 let statusCheckInterval = null;
+let statusEventSource = null;
+let lastNotifiedFailure = null;
 
 // Initialize on page load
 document.addEventListener('DOMContentLoaded', () => {
@@ -239,15 +241,8 @@ async function updateStatus() {
     try {
         const response = await fetch('/api/status');
         const data = await response.json();
-        
-        const statusText = document.getElementById('statusText');
-        
-        if (data.is_running) {
-            statusText.textContent = `Running: ${data.example_name}`;
-        } else {
-            statusText.textContent = 'No example running';
-            hideLoading();
-        }
+
+        handleStatusUpdate(data);
     } catch (error) {
         console.error('Failed to update status:', error);
     }
@@ -255,10 +250,14 @@ async function updateStatus() {
 
 // Start status polling with SSE
 function startStatusPolling() {
+    if (statusEventSource) {
+        statusEventSource.close();
+    }
+
     // Use Server-Sent Events for real-time status updates
-    const eventSource = new EventSource('/api/status/stream');
+    statusEventSource = new EventSource('/api/status/stream');
     
-    eventSource.onmessage = function(event) {
+    statusEventSource.onmessage = function(event) {
         try {
             const data = JSON.parse(event.data);
             handleStatusUpdate(data);
@@ -267,13 +266,15 @@ function startStatusPolling() {
         }
     };
     
-    eventSource.onerror = function(event) {
+    statusEventSource.onerror = function(event) {
         console.error('Status stream error:', event);
         // Fallback to polling if SSE fails
         setTimeout(() => {
-            if (eventSource.readyState === EventSource.CLOSED) {
+            if (!statusEventSource || statusEventSource.readyState === EventSource.CLOSED) {
                 console.log('Falling back to polling...');
-                statusCheckInterval = setInterval(updateStatus, 3000);
+                if (!statusCheckInterval) {
+                    statusCheckInterval = setInterval(updateStatus, 3000);
+                }
             }
         }, 5000);
     };
@@ -295,12 +296,22 @@ function handleStatusUpdate(data) {
         case 'idle':
             statusText.textContent = 'No example running';
             hideLoading();
+            lastNotifiedFailure = null;
             break;
         case 'failed':
-            statusText.textContent = 'Example failed to start';
+            statusText.textContent = data.example_name
+                ? `Failed: ${data.example_name}`
+                : 'Example failed';
             hideLoading();
             if (data.message) {
-                showNotification(data.message, 'error');
+                const signature = `${data.message}|${data.exit_code || ''}`;
+                if (signature !== lastNotifiedFailure) {
+                    lastNotifiedFailure = signature;
+                    showNotification(data.message, 'error');
+                }
+            } else if (lastNotifiedFailure !== 'unknown_failure') {
+                lastNotifiedFailure = 'unknown_failure';
+                showNotification('Example failed. Check launcher logs for details.', 'error');
             }
             break;
         default:
@@ -369,5 +380,8 @@ function setupScrollDetection() {
 window.addEventListener('beforeunload', () => {
     if (statusCheckInterval) {
         clearInterval(statusCheckInterval);
+    }
+    if (statusEventSource) {
+        statusEventSource.close();
     }
 });

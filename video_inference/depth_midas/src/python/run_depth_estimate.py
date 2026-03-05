@@ -27,13 +27,13 @@ from memryx import AsyncAccl, NeuralCompiler
 ###############################################################################
 
 # Check if the models folder is created in the correct path and creates it if not
-if not path.exists("../../models"):
-    system("mkdir -p ../../models")
+if not path.exists("models"):
+    system("mkdir -p models")
 
 # Parse command-line arguments for model path (-m) and DFP file (-d)
 parser = argparse.ArgumentParser(description="Run MX3 real-time inference with options for model path and DFP file.")
-parser.add_argument('-m', '--model', type=str, default="../../models/midas_v2_small.tflite", help="Specify the path to the model. Default is 'models/midas_v2_small.tflite'.")
-parser.add_argument('-d', '--dfp', type=str, default="../../models/midas_v2_small.dfp", help="Specify the path to the compiled DFP file. Default is 'models/midas_v2_small.dfp'.")
+parser.add_argument('-m', '--model', type=str, default="models/midas_v2_small.tflite", help="Specify the path to the model. Default is 'models/midas_v2_small.tflite'.")
+parser.add_argument('-d', '--dfp', type=str, default="models/midas_v2_small.dfp", help="Specify the path to the compiled DFP file. Default is 'models/midas_v2_small.dfp'.")
 args = parser.parse_args()
 
 # Set model and DFP paths based on arguments

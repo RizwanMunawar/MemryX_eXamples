@@ -88,7 +88,7 @@ To run the Python example for real-time person blurring using MX3, simply naviga
 
 ```bash
 cd src/python/
-python3 run_object_blurring.py [--cam | --video VIDEO]
+python3 run_object_blurring.py --cam
 ```
 
 Where you either use:
