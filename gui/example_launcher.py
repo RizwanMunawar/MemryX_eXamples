@@ -87,7 +87,8 @@ EXAMPLE_BLACKLIST = [
     "Object Tracking",
     "Detection with H/W Decoding",
     "Fitness Mirror",
-    "Cartoonizer + Pose (Side-by-Side)"
+    "Cartoonizer + Pose (Side-by-Side)",
+    "CLIP Zero-Shot Classify"
 ]
 
 CATEGORY_BLACKLIST = [
