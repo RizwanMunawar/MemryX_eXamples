@@ -12,9 +12,10 @@ namespace fs = std::filesystem;
 
 std::atomic_bool runflag;
 
-//YoloV7 application specific parameters
-fs::path model_path = "YOLO_v7_tiny_416_416_3_onnx.dfp";
-fs::path postprocessing_model_path = "YOLO_v7_tiny_416_416_3_onnx_post.onnx";
+//YoloV26 application specific parameters
+fs::path model_path = "YOLO26_nano_640_640_3_onnx.dfp";
+fs::path postprocessing_model_path = "YOLO26_nano_640_640_3_onnx_post.onnx";
+
 #define AVG_FPS_CALC_FRAME_COUNT  50
 #define FRAME_QUEUE_MAX_LENGTH     5
 //signal handler
@@ -100,14 +101,14 @@ bool openCamera(cv::VideoCapture& vcap, int device, int api) {
     return true;
 }
 
-class YoloV7 {
+class YoloV26 {
 private:
     // Model Params
     int model_input_width;//width of model input image
     int model_input_height;//height of model input image
     int input_image_width;//width of input image
     int input_image_height;//height of input image
-    int num_boxes = 300;//Maximum number of boxes that can be output by the yolov7-tiny model
+    int num_boxes = 300;//Maximum number of boxes that can be output by the YOLOv26 model
     float conf_thresh = 0.4;//Confidence threshold of the boxes
     std::vector<std::string> class_names = { //Class names list of COCO dataset
         "person", "bicycle", "car", "motorbike", "aeroplane", "bus", "train", "truck", "boat",
@@ -167,19 +168,30 @@ private:
 
     std::vector<detectedObj> get_detections(float* output, int num_boxes) {
         std::vector<detectedObj> detections;
+        
+        // YOLOv26 output format: (1, 300, 6) where each detection is [x1, y1, x2, y2, confidence, class_id]
+        // The output is flattened, so we access it as output[i * 6 + offset]
+        
         for (int i = 0; i < num_boxes; i++) {
-            //Decoding model output
-            float accuracy = output[i * 7 + 6];
+            //Decoding model output - YOLOv26 format: [x1, y1, x2, y2, confidence, class_id]
+            float x1 = output[i * 6 + 0];
+            float y1 = output[i * 6 + 1];
+            float x2 = output[i * 6 + 2];
+            float y2 = output[i * 6 + 3];
+            float accuracy = output[i * 6 + 4];
+            int classPrediction = static_cast<int>(output[i * 6 + 5]);
+            
+            // Skip invalid detections (x1 < 0 indicates padding/invalid detection)
+            if (x1 < 0) {
+                continue;
+            }
+            
+            // Filter by confidence threshold
             if (accuracy < conf_thresh) {
                 continue;
             }
-            float x1 = output[i * 7 + 1];
-            float y1 = output[i * 7 + 2];
-            float x2 = output[i * 7 + 3];
-            float y2 = output[i * 7 + 4];
-            int classPrediction = output[i * 7 + 5];
 
-            // Coords should be scaled to the dispaly image. The coords from the model are relative to the model's input height and width.
+            // Coords should be scaled to the display image. The coords from the model are relative to the model's input height and width.
             x1 = (x1 / model_input_width) * input_image_width;
             x2 = (x2 / model_input_width) * input_image_width;
             y1 = (y1 / model_input_height) * input_image_height;
@@ -272,7 +284,7 @@ private:
     }
 
 public:
-    YoloV7(MX::Runtime::MxAccl* accl, std::string video_src, MxQt* gui, int index) {
+    YoloV26(MX::Runtime::MxAccl* accl, std::string video_src, MxQt* gui, int index) {
         //Assigning gui variable to class specifc variable
         gui_ = gui;
         // If the input is a camera, try to use optimal settings
@@ -309,22 +321,22 @@ public:
         input_image_height = static_cast<int>(vcap.get(cv::CAP_PROP_FRAME_HEIGHT));
 
         model_info = accl->get_model_info(0);//Getting model info of 0th model which is the only model in this DFP
-        mxa_output = new float[num_boxes * 7];//Creating the memory of output (max_boxes X num_box_parameters) 
+        mxa_output = new float[num_boxes * 6];//Creating the memory of output (max_boxes X num_box_parameters) - YOLOv26 has 6 params per box 
 
         //Getting model input shapes and display size
         model_input_height = model_info.in_featuremap_shapes[0][0];
         model_input_width = model_info.in_featuremap_shapes[0][1];
 
         //Connecting the stream to the accl object. As the callback functions are defined as part of the class
-        //YoloV7 we should bind them with the possible input parameters
-        auto in_cb = std::bind(&YoloV7::incallback_getframe, this, std::placeholders::_1, std::placeholders::_2);
-        auto out_cb = std::bind(&YoloV7::outcallback_getmxaoutput, this, std::placeholders::_1, std::placeholders::_2);
+        //YoloV26 we should bind them with the possible input parameters
+        auto in_cb = std::bind(&YoloV26::incallback_getframe, this, std::placeholders::_1, std::placeholders::_2);
+        auto out_cb = std::bind(&YoloV26::outcallback_getmxaoutput, this, std::placeholders::_1, std::placeholders::_2);
         accl->connect_stream(in_cb, out_cb, index/**Unique Stream Idx */, 0/**Model Idx */);
 
         //Starts the callbacks when the call is started
         runflag.store(true);
     }
-    ~YoloV7() {
+    ~YoloV26() {
         delete[] mxa_output;
         mxa_output = NULL;
     }
@@ -401,8 +413,8 @@ int main(int argc, char* argv[]) {
 
     // Connecting the post-processing model obtained from the autocrop of neural compiler to get the final output.
     // The second parameter is required as the output shape of this particular post-processing model is variable
-    // and accl requires to know maximum possible size of the output. In this case it is (max_possible_boxes * size_of_box = 300 *7= 2100).
-    accl.connect_post_model(fs::path(postprocessing_model_path), 0, std::vector<size_t>{300 * 7});
+    // and accl requires to know maximum possible size of the output. In this case it is (max_possible_boxes * size_of_box = 300 * 6 = 1800).
+    accl.connect_post_model(fs::path(postprocessing_model_path), 0, std::vector<size_t>{300 * 6});
 
     // Creating GuiView which is a memryx qt util for easy display
     MxQt gui(argc, argv);
@@ -412,10 +424,10 @@ int main(int argc, char* argv[]) {
     else
         gui.screens[0]->SetSquareLayout(static_cast<int>(video_src_list.size()));
 
-    //Creating a YoloV7 object for each stream which also connects the corresponding stream to accl.
-    std::vector<YoloV7*>yolo_objs;
+    //Creating a YoloV26 object for each stream which also connects the corresponding stream to accl.
+    std::vector<YoloV26*>yolo_objs;
     for (int i = 0; i < video_src_list.size(); ++i) {
-        YoloV7* obj = new YoloV7(&accl, video_src_list[i], &gui, i);
+        YoloV26* obj = new YoloV26(&accl, video_src_list[i], &gui, i);
         yolo_objs.push_back(obj);
     }
 

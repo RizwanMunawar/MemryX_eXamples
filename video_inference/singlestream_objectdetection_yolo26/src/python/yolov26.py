@@ -1,35 +1,20 @@
 """
-yolov7.py
-YoloV7-tiny-416 pre/post processing
----------
-Copyright (c) 2024 MemryX Inc.
+============
+Information:
+============
+Project: YOLOv26 example code on MXA
+File Name: yolov26.py
 
-
-YoloV7 Weights
---------------
-Copyright (c) 2023 Chien-Yao Wang, Alexey Bochkovskiy, and Hong-Yuan Mark Liao
-
-
-GPL v3 License
-
-This program is free software; you can redistribute it and/or modify it under
-the terms of the GNU General Public License as published by the Free Software
-Foundation; either version 3 of the License, or (at your option) any later version.
-
-This program is distributed in the hope that it will be useful, but
-WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
-FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License along
-with this program; if not, see http://www.gnu.org/licenses/gpl-3.0
-
+============
+Description:
+============
+A script to show how to use the Acclerator API to perform a real-time inference
+on MX3 using YOLOv26 model.
 """
 
 ###################################################################################################
 
 # Imports
-import onnx, onnxruntime
-onnxruntime.set_default_logger_severity(3)
 
 import numpy as np
 import cv2
@@ -54,9 +39,9 @@ COCO_CLASSES = ( "person", "bicycle", "car", "motorcycle", "airplane", "bus",
 ###################################################################################################
 ###################################################################################################
 
-class YoloV7Tiny:
+class YoloV26:
     """
-    A helper class to run YOLOv7 pre- and post-proccessing.
+    A helper class to run YOLOv26 pre- and post-proccessing.
     """
 
 ###################################################################################################
@@ -65,15 +50,8 @@ class YoloV7Tiny:
         The initialization function.
         """
 
-        self.name = 'YoloV7Tiny-416'
-        self.input_size = (416,416,3) 
-        self.output_size = [(52,52,255),(26,26,255),(13,13,255)]
-        
-        sess_options = onnxruntime.SessionOptions()
-        sess_options.intra_op_num_threads = 1
-        sess_options.inter_op_num_threads = 1
-
-        self.post_model = onnxruntime.InferenceSession('../../models/YOLO_v7_tiny_416_416_3_onnx_post.onnx', sess_options=sess_options)
+        self.name = 'YoloV26-640'
+        self.input_size = (640, 640, 3) 
 
         self.stream_mode = False
         if stream_img_size:
@@ -84,7 +62,7 @@ class YoloV7Tiny:
 ###################################################################################################
     def preprocess(self, img):
         """
-        YOLOv7 Pre-proccessing.
+        YOLOv26 Pre-proccessing.
         """
         h0, w0 = img.shape[:2] # orig hw
 
@@ -146,33 +124,47 @@ class YoloV7Tiny:
 ###################################################################################################
     def postprocess(self, fmap):
         """
-        YOLOv7 Post-proccessing.
+        YOLOv26 Post-proccessing.
+        Output format: (1, 300, 6) where each detection is [x1, y1, x2, y2, confidence, class_id]
         """
-        if len(fmap[0].shape) == 3:
-            _fmap = [f[None,:,:,:] for f in fmap]
-        else:
-            _fmap = fmap
-
-        post_input = {
-            self.post_model.get_inputs()[0].name: _fmap[0],
-            self.post_model.get_inputs()[1].name: _fmap[1],
-            self.post_model.get_inputs()[2].name: _fmap[2]
-        }
-        post_output = self.post_model.run(None, post_input)[0]
-
+        
+        post_output = fmap[0]  # Shape: (1, 300, 6)
+        
+        # Check if output is empty
+        if len(post_output) == 0:
+            return []
+        
+        # Get the detections array - shape (300, 6)
+        detections = post_output[0]
+        
         dets = []
-        # run post process model
-        for i, arr in enumerate(post_output):
-            if arr[6] < 0.4:
+        
+        # Iterate through each detection
+        for detection in detections:
+            # Extract values: [x1, y1, x2, y2, confidence, class_id]
+            x1, y1, x2, y2, confidence, class_id = detection
+            
+            # Filter by confidence threshold
+            if confidence < 0.4:
                 continue
-            unpad = arr[1:5]-np.array([self.pad[0], self.pad[1], self.pad[0], self.pad[1]])
-            x1,y1,x2,y2 = (unpad / self.ratio).astype(int)
-            det = {}
-            det['bbox'] = (x1,y1,x2,y2)
-            det['class'] = COCO_CLASSES[int(arr[5])]
-            det['class_idx'] = int(arr[5])
-            det['score'] = arr[6]
+            
+            # Skip invalid detections (x1 < 0 often indicates padding/invalid detection)
+            if x1 < 0:
+                continue
+            
+            # Adjust for padding
+            unpad = np.array([x1, y1, x2, y2]) - np.array([self.pad[0], self.pad[1], self.pad[0], self.pad[1]])
+            x1_adj, y1_adj, x2_adj, y2_adj = (unpad / self.ratio).astype(int)
+            
+            # Create detection dictionary
+            det = {
+                'bbox': (int(x1_adj), int(y1_adj), int(x2_adj), int(y2_adj)),
+                'class': COCO_CLASSES[int(class_id)],
+                'class_idx': int(class_id),
+                'score': float(confidence)
+            }
             dets.append(det)
+        
         return dets
 
 ###################################################################################################

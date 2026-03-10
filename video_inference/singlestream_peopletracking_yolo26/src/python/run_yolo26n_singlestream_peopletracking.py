@@ -29,7 +29,7 @@ import cv2
 from queue import Queue
 from threading import Thread
 from memryx import AsyncAccl
-from yolov7 import YoloV7Tiny as YoloModel
+from yolov26 import YoloV26 as YoloModel
 
 ###################################################################################################
 ###########################Tracking Code Start#####################################################
@@ -290,9 +290,9 @@ COCO_CLASSES = ( "person", "bicycle", "car", "motorcycle", "airplane", "bus",
 
 ###################################################################################################
 
-class Yolo7Mxa:
+class Yolo26Mxa:
     """
-    A demo app to run YOLOv7 on the the MemryX MXA
+    A demo app to run YOLOv26 on the the MemryX MXA
     """
 
 ###################################################################################################
@@ -351,10 +351,11 @@ class Yolo7Mxa:
         """
 
         # AsyncAccl
-        accl = AsyncAccl(dfp='../../models/YOLO_v7_tiny_416_416_3_onnx.dfp')
-
+        accl = AsyncAccl(dfp='../../models/YOLO26_nano_640_640_3_onnx.dfp')
+        accl.set_postprocessing_model('../../models/YOLO26_nano_640_640_3_onnx_post.onnx')
+        
         # Start the Display/Save thread
-        print("YOLOv7-Tiny inference on MX3 started")
+        print("YOLOv26 inference on MX3 started")
         self.display_save_thread.start()
 
         start_time = time.time()
@@ -476,7 +477,7 @@ class Yolo7Mxa:
             # Show the frame
             if self.show:
 
-                cv2.imshow('YOLOv7t Person Tracking on MX3', frame)
+                cv2.imshow('YOLOv26 Person Tracking on MX3', frame)
 
                 # Exit on a key press
                 if cv2.waitKey(1) == ord('q'):
@@ -498,14 +499,14 @@ def main(args):
     The main funtion
     """
 
-    yolo7_inf = Yolo7Mxa(video_path = args.video_path, show=args.show, save=args.save)
-    yolo7_inf.run()
+    yolo26_inf = Yolo26Mxa(video_path = args.video_path, show=args.show, save=args.save)
+    yolo26_inf.run()
 
 ###################################################################################################
 
 if __name__=="__main__":
     # The args parser
-    parser = argparse.ArgumentParser(description = "\033[34mMemryX YoloV7-Tiny Demo\033[0m")
+    parser = argparse.ArgumentParser(description = "\033[34mMemryX YoloV26 Person Tracking Demo\033[0m")
     parser.add_argument('--video_path', dest="video_path", 
                         action="store", 
                         default='/dev/video0',
