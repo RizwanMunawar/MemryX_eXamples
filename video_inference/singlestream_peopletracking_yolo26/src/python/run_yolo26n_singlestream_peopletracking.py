@@ -312,12 +312,22 @@ class Yolo26Mxa:
         self.dets_queue = Queue(maxsize=5)
         if "/dev/video" in str(video_path):
             self.src_is_cam = True
+            self.vidcap = cv2.VideoCapture(video_path, cv2.CAP_V4L2)
         else:
             self.src_is_cam = False
-        self.vidcap = cv2.VideoCapture(video_path, cv2.CAP_V4L2) 
+            self.vidcap = cv2.VideoCapture(video_path)
+        
+        # Check if video capture opened successfully
+        if not self.vidcap.isOpened():
+            raise ValueError(f"Error: Could not open video source: {video_path}")
 
         self.dims = ( int(self.vidcap.get(cv2.CAP_PROP_FRAME_WIDTH)), 
                 int(self.vidcap.get(cv2.CAP_PROP_FRAME_HEIGHT)) )
+        
+        # Check if dimensions are valid
+        if self.dims[0] == 0 or self.dims[1] == 0:
+            raise ValueError(f"Error: Invalid video dimensions {self.dims} from {video_path}. Video may be corrupted or unsupported format.")
+        
         self.color_wheel = np.array(np.random.random([20,3])*255).astype(np.int32)
 
         # Model
@@ -365,8 +375,13 @@ class Yolo26Mxa:
         accl.connect_output(self.postprocess)
         accl.wait()
 
-        # Done
+        # Done - signal threads to stop
         self.done = True
+        
+        # Clean up video capture
+        if self.vidcap is not None:
+            self.vidcap.release()
+        
         running_time = time.time()-start_time
         fps = self.num_frames / running_time
         print(f"Total running time {running_time:.1f}s for {self.num_frames} frames ... Average FPS: {fps:.1f}")
@@ -379,11 +394,15 @@ class Yolo26Mxa:
         """
         Captures a frame for the video device and pre-processes it.
         """
+        
+        # Check if exit was requested
+        if self.done:
+            return None
        
         while True:
             got_frame, frame = self.vidcap.read()
 
-            if not got_frame:
+            if not got_frame or self.done:
                 return None
 
             if self.src_is_cam and self.cap_queue.full():
@@ -481,10 +500,10 @@ class Yolo26Mxa:
 
                 # Exit on a key press
                 if cv2.waitKey(1) == ord('q'):
+                    print("Exit requested by user...")
                     self.done = True
                     cv2.destroyAllWindows()
-                    self.vidcap.release()
-                    exit(1)
+                    break  # Exit the display loop cleanly
             
             # Save the frame
             if self.save: 
