@@ -42,7 +42,7 @@ pip install ultralytics==8.3.161
 
 To download and unzip the precompiled DFPs, use the following commands:
 ```bash
-chmod +x models/download_model.sh; ./models/download_model.sh;
+chmod +x download_model.sh; ./download_model.sh;
 ```
 
 <details>
@@ -50,8 +50,9 @@ chmod +x models/download_model.sh; ./models/download_model.sh;
 If you prefer, you can download and compile the model rather than using the precompiled version. Download the pre-trained YoloV8m-OBB model:
 
 ```bash
+mkdir -p models/
 cd models/
-python3 export_model.py
+python -c "from ultralytics import YOLO; YOLO('yolov8s-obb.pt').export(format='onnx')"
 ```
 
 You can now use the MemryX Neural Compiler to compile the model and generate the DFP file required by the accelerator:
