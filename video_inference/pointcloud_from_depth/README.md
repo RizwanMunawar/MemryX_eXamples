@@ -51,7 +51,7 @@ Then open the `src/python_windows/` folder and double-click on `setup_env.bat`. 
 
 To download and unzip the precompiled DFPs, use the following commands:
 ```bash
-wget https://developer.memryx.com/model_explorer/2p0/MiDaS_256_256_3_tflite.zip
+wget https://developer.memryx.com/model_explorer/2p2/MiDaS_256_256_3_tflite.zip
 mkdir -p models
 unzip MiDaS_256_256_3_tflite.zip -d models
 ```
@@ -61,10 +61,10 @@ unzip MiDaS_256_256_3_tflite.zip -d models
 If you prefer, you can download and compile the model rather than using the precompiled model. Download the pre-trained MiDaS v2 Small model from TensorFlow Hub:
 
 ```bash
-curl -L -o ./midas_v2_small.tar.gz https://www.kaggle.com/api/v1/models/intel/midas/tfLite/v2-1-small-lite/1/download
-tar -xzf ./midas_v2_small.tar.gz -C ./
+curl -L -o ./MiDaS_256_256_3_tflite https://www.kaggle.com/api/v1/models/intel/midas/tfLite/v2-1-small-lite/1/download
+tar -xzf ./MiDaS_256_256_3_tflite -C ./
 mkdir -p models
-mv 1.tflite ./models/MiDaS_256_256_3_tflite.tflite
+mv 1.tflite models/MiDaS_256_256_3_tflite.tflite
 ```
 
 You can now use the MemryX Neural Compiler to compile the model and generate the DFP file required by the accelerator:
