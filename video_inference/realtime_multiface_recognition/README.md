@@ -15,7 +15,7 @@ pipeline into a realtime application with an interactive GUI.
 | **Model Type**       | Face Detection + Recognition
 | **Framework**        | [Onnx](https://onnx.ai/) + [Keras](https://keras.io/)
 | **Model Source**     | [YoloV8n-Face](https://github.com/derronqi/yolov8-face), [FaceNet](https://github.com/serengil/deepface/blob/master/deepface/models/facial_recognition/Facenet.py)
-| **Pre-compiled DFP** | [Download here](https://developer.memryx.com/example_files/2p0/face_recognition.zip)                                           
+| **Pre-compiled DFP** | [Download here](https://developer.memryx.com/example_files/2p2/face_recognition.zip)                                           
 | **Output**           | Face bounding box + keypoints + embedding
 | **OS**               | Linux
 | **License**          | [GPL](LICENSE.md)                                         
