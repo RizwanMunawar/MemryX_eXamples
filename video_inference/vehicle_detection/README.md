@@ -18,7 +18,7 @@ The **vehicle detection** example demonstrates real-time vehicle detection using
 | **Model Type**       | Object Detection
 | **Framework**        | [Tflite](https://www.tensorflow.org/)
 | **Model Source**     | [Download from PINTO](https://s3.ap-northeast-2.wasabisys.com/pinto-model-zoo/178_vehicle-detection-0200/resources.tar.gz)
-| **Pre-compiled DFP** | [Download here](https://developer.memryx.com/model_explorer/2p0/Vehicle_Detection_0200_256_256_3_tflite.zip)
+| **Pre-compiled DFP** | [Download here](https://developer.memryx.com/model_explorer/2p2/Vehicle_Detection_0200_256_256_3_tflite.zip)
 | **Input**            | 256x256x3
 | **Output**           | Bounding boxes, confidence scores.
 | **OS**               | Linux
@@ -38,7 +38,7 @@ pip3 install opencv-python==4.11.0.86 numpy
 
 To download and unzip the precompiled DFPs, use the following commands:
 ```bash
-wget https://developer.memryx.com/model_explorer/2p0/Vehicle_Detection_0200_256_256_3_tflite.zip
+wget https://developer.memryx.com/model_explorer/2p2/Vehicle_Detection_0200_256_256_3_tflite.zip
 mkdir -p models
 unzip Vehicle_Detection_0200_256_256_3_tflite.zip -d models
 ```
