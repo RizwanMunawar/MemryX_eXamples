@@ -14,7 +14,7 @@ The **Speech Emotion Recognition web application** example demonstrates how to d
 | **Model Type**       | Classification
 | **Framework**        | [Tflite](https://www.tensorflow.org/)
 | **Model Source**     | [Download from Github](https://github.com/AryaAftab/LIGHT-SERNET/tree/master)
-| **Pre-compiled DFP** | [Download here](https://developer.memryx.com/example_files/2p0/speech_emotion_recognition.zip)
+| **Pre-compiled DFP** | [Download here](https://developer.memryx.com/example_files/2p2/speech_emotion_recognition.zip)
 | **Input**            | Audio clips (.wav files)
 | **Output**           | Emotion detected from the speech input
 | **OS**               | Linux
@@ -46,7 +46,7 @@ pip install ffmpeg-python==0.2.0
 
 To download and unzip the precompiled DFPs, use the following commands:
 ```bash
-wget https://developer.memryx.com/example_files/2p0/speech_emotion_recognition.zip
+wget https://developer.memryx.com/example_files/2p2/speech_emotion_recognition.zip
 mkdir -p models
 unzip speech_emotion_recognition.zip -d models
 ```

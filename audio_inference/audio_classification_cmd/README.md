@@ -14,7 +14,7 @@ The **Audio classification using YAMNet** example demonstrates how to classify a
 | **Model Type**       | Classification
 | **Framework**        | [Tflite](https://www.tensorflow.org/)
 | **Model Source**     | [Download from Kaggle](https://www.kaggle.com/models/google/yamnet/tfLite)
-| **Pre-compiled DFP** | [Download here](https://developer.memryx.com/model_explorer/2p0/Audio_classification_YamNet_96_64_1_tflite.zip)
+| **Pre-compiled DFP** | [Download here](https://developer.memryx.com/model_explorer/2p2/Audio_classification_YamNet_96_64_1_tflite.zip)
 | **Input**            | Audio clips (.wav files)
 | **Output**           | Class to which the audio clip mostly is about.
 | **OS**               | Linux
@@ -39,7 +39,7 @@ NOTE: The package **ai-edge-litert** is only supported in Python versions 3.9 - 
 
 To download and unzip the precompiled DFPs, use the following commands:
 ```bash
-wget https://developer.memryx.com/model_explorer/2p0/Audio_classification_YamNet_96_64_1_tflite.zip
+wget https://developer.memryx.com/model_explorer/2p2/Audio_classification_YamNet_96_64_1_tflite.zip
 mkdir -p models
 unzip Audio_classification_YamNet_96_64_1_tflite.zip -d models
 ```
