@@ -14,7 +14,7 @@ The **Object Detection** example demonstrates real-time Object Detection inferen
 | **Model Type**       | Object Detection                                                        |
 | **Framework**        | [ONNX](https://onnx.ai/)                                                   |
 | **Model Source**     | [Download from YoloX GitHub](https://github.com/Megvii-BaseDetection/YOLOX/releases/download/0.1.1rc0/yolox_m.onnx) |
-| **Pre-compiled DFP** | [Download here](https://developer.memryx.com/model_explorer/2p0/YOLOX_medium_640_640_3_onnx.zip)                                       |
+| **Pre-compiled DFP** | [Download here](https://developer.memryx.com/model_explorer/2p2/YOLOX_medium_640_640_3_onnx.zip)                                       |
 | **Model Resolution** | 640x640                                                       |
 | **Output**           | Total number of prediction grid points, along with bounding boxes, confidence scores, and class probabilities for detected objects (in anchor-free YOLOX, without predefined anchor boxes). |
 | **OS**               | Linux |
@@ -34,7 +34,7 @@ pip install opencv-python==4.11.0.86
 
 To download and unzip the precompiled DFPs, use the following commands:
 ```bash
-wget https://developer.memryx.com/model_explorer/2p0/YOLOX_medium_640_640_3_onnx.zip
+wget https://developer.memryx.com/model_explorer/2p2/YOLOX_medium_640_640_3_onnx.zip
 mkdir -p models
 unzip YOLOX_medium_640_640_3_onnx.zip -d models
 
