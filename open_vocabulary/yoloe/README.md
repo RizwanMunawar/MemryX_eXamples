@@ -17,7 +17,7 @@ The **YOLOE** example demonstrates **real-time open-vocabulary object detection 
 | **Model Type**       | Open-Vocab Object Detection and Segmentation
 | **Framework**        | ONNX
 | **Model Source**     | [Ultralytics YOLOE](https://docs.ultralytics.com/models/yoloe/)
-| **Pre-compiled DFP** | [Download here](https://developer.memryx.com/example_files/YoloE-v8s-seg_640_640_3_onnx.zip)
+| **Pre-compiled DFP** | [Download here](https://developer.memryx.com/example_files/2p2/YoloE-v8s-seg_640_640_3_onnx.zip)
 | **Input**            | Configurable (e.g., 640x640x3)
 | **Output**           | Bounding boxes, segmentation masks, confidence scores
 | **OS**               | Linux
@@ -39,7 +39,7 @@ pip3 install -r requirements.txt
 To download and unzip the precompiled DFPs, use the following commands:
 
 ```bash
-wget https://developer.memryx.com/example_files/YoloE-v8s-seg_640_640_3_onnx.zip
+wget https://developer.memryx.com/example_files/2p2/YoloE-v8s-seg_640_640_3_onnx.zip
 mkdir -p models
 unzip YoloE-v8s-seg_640_640_3_onnx.zip -d models
 ```
