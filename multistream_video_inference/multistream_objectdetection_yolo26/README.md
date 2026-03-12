@@ -1,27 +1,27 @@
-# Multi-Stream Object Detection Using Yolov7 Tiny
+# Multi-Stream Object Detection Using Yolo26
 
-The **Object Detection** example demonstrates real-time object detection using the pre-trained yolov7 tiny model on MemryX accelerators. This guide provides setup instructions, model details, and necessary code snippets to help you quickly get started.
+The **Object Detection** example demonstrates real-time object detection using the pre-trained yolo2n model on MemryX accelerators. This guide provides setup instructions, model details, and necessary code snippets to help you quickly get started.
 
 <p align="center">
-  <img src="assets/yolov7_objectDetection_multistream.png" alt="MultiStream Object Detection Example" width="45%" />
+  <img src="assets/yolo26n_objectDetection_multistream.png" alt="MultiStream Object Detection Example" width="45%" />
 </p>
 
-For a single-stream input example, please refer to [single-stream object detection using yolov7 tiny](../../video_inference/singlestream_objectdetection_yolov7Tiny/README.md).
+For a single-stream input example, please refer to [single-stream object detection using yolo26](../../video_inference/singlestream_objectdetection_yolo26/README.md).
 
 ## Overview
 
 | Property             | Details                                                                 |
 |----------------------|-------------------------------------------------------------------------|
-| **Model**            | [Yolov7 Tiny](https://arxiv.org/pdf/2207.02696)                                            |
+| **Model**            | [Yolo26n](https://docs.ultralytics.com/models/yolo26/)                                             |
 | **Model Type**       | Object Detection                                                      |
 | **Framework**        | [onnx](https://onnx.ai/)                                                   |
-| **Model Source**     | [Download](https://github.com/WongKinYiu/yolov7/releases/download/v0.1/yolov7-tiny.pt) and [export](https://github.com/WongKinYiu/yolov7/blob/main/export.py) to onnx |
-| **Pre-compiled DFP** | [Download here](https://developer.memryx.com/model_explorer/2p0/YOLO_v7_tiny_416_416_3_onnx.zip)                                           |
+| **Model Source**     |[Download from Ultralytics GitHub or docs](https://docs.ultralytics.com/tasks/detect/)|
+| **Pre-compiled DFP** | [Download here](https://developer.memryx.com/model_explorer/2p2/YOLO26_nano_640_640_3_onnx.zip)                                           |
 | **Dataset**          | [COCO](https://docs.ultralytics.com/datasets/detect/coco/) |
-| **Model Resolution**            | 416x416                                                    |
+| **Model Resolution**            | 640x640                                                  |
 | **Output**           | Bounding box coordinates with object probabilities |
 | **OS**               | Linux |
-| **License**          | [GPL](LICENSE.md)                                      |
+| **License**          | [AGPL](LICENSE.md)                            |
 
 ## Requirements
 
@@ -43,28 +43,39 @@ sudo apt-get install memx-accl memx-accl-plugins memx-utils-gui
 
 To download and unzip the precompiled DFPs, use the following commands:
 ```bash
-wget https://developer.memryx.com/model_explorer/2p0/YOLO_v7_tiny_416_416_3_onnx.zip
+wget https://developer.memryx.com/model_explorer/2p2/YOLO26_nano_640_640_3_onnx.zip
 mkdir -p models
-unzip YOLO_v7_tiny_416_416_3_onnx.zip -d models
+unzip YOLO26_nano_640_640_3_onnx -d models
 ```
 
 <details> 
 <summary> (Optional) Download and compile the model yourself </summary>
-If you prefer, you can download and compile the model rather than using the precompiled model. Download the pretrained yolov7-tiny model from the source github.
+If you prefer, you can download and compile the model rather than using the precompiled model. 
+
+Download the pretrained yolo26n.pt file from the Ultralytics documentation using the link below:
 
 ```bash
-git clone https://github.com/WongKinYiu/yolov7.git
-cd yolov7
-wget https://github.com/WongKinYiu/yolov7/releases/download/v0.1/yolov7-tiny.pt -O yolov7tiny.pt
-
-python export.py --weights yolov7-tiny.pt --grid --end2end --simplify --topk-all 100 --iou-thres 0.65 --conf-thres 0.35 --img-size 416 416 --max-wh 416
+wget https://github.com/ultralytics/assets/releases/download/v8.4.0/yolo26n.pt 
 ```
-The export script will generate a yolov7-tiny onnx file.
 
-You can now use the MemryX Neural Compiler to compile the model and generate the DFP file required by the accelerator
+You can use the following code to export the model to ONNX format:
 
 ```bash
- mx_nc -m yolov7-tiny.onnx -v --autocrop
+from ultralytics import YOLO
+
+# Load the model
+model = YOLO("yolo26n.pt")  # load the downloaded model
+
+# Export the model
+model.export(format="onnx")
+```
+This script will generate a yolo26n.onnx file.
+
+You can now use the MemryX Neural Compiler to compile the model and generate the DFP file required by the accelerator:
+
+```bash
+mv yolo26n.onnx YOLO26_nano_640_640_3_onnx.onnx
+mx_nc -m YOLO26_nano_640_640_3_onnx.onnx -v --autocrop
 ```
 The compiler will generate the DFP and a post-processing file which can be passed as inputs to the application.
 
@@ -76,17 +87,17 @@ With the compiled model, you can now run real-time inference. Below are the exam
 
 #### Python
 
-To run the Python example for object detection with yolov7-tiny using MX3, simply execute the following command:
+To run the Python example for object detection with yolo26n using MX3, simply execute the following command:
 
 ```bash
 cd src/python/
 # ensure a camera device is connected as default video input is a cam
-python run_yolov7_multistream_objectdetection.py 
+python run_yolo26n_multistream_objectdetection.py 
 ```
 You can specify the model path and DFP (Compiled Model) path with the following options:
 
-* `-m` or `--postmodel`: Path to the model file (default is models/YOLO_v7_tiny_416_416_3_onnx_post.onnx)
-* `-d` or `--dfp`: Path to the compiled DFP file (default is models/YOLO_v7_tiny_416_416_3_onnx.dfp)
+* `-m` or `--postmodel`: Path to the model file (default is models/YOLO26_nano_640_640_3_onnx_post.onnx)
+* `-d` or `--dfp`: Path to the compiled DFP file (default is models/YOLO26_nano_640_640_3_onnx.dfp)
 
 You can specify the input video path with the following option:
 
@@ -95,14 +106,14 @@ You can specify the input video path with the following option:
 For example, to run with a specific video, post-processing model and DFP file, use:
 
 ```bash
-python run_yolov7_multistream_objectdetection.py -m <postmodel_path> -d <dfp_path> --video_paths /dev/video0
+python run_yolo26n_multistream_objectdetection.py -m <postmodel_path> -d <dfp_path> --video_paths /dev/video0
 ```
 
 You can specify multiple input video paths to run multiple stream with `--video_paths` option:
 
 ```bash
 cd src/python/
-python run_yolov7_multistream_objectdetection.py --video_paths /dev/video0 <video_path1> <video_path2>
+python run_yolo26n_multistream_objectdetection.py --video_paths /dev/video0 <video_path1> <video_path2>
 ```
 
 
@@ -155,7 +166,7 @@ make
 ## Running the Application (Windows)
 
 ### Running from compiled executable
-[Download](https://developer.memryx.com/example_files/2p0/multistream_object_detection_yolov7.zip) the compiled C++ executable version, and extract the zip.
+[Download](https://developer.memryx.com/model_explorer/2p2/YOLO26_nano_640_640_3_onnx.zip) the compiled C++ executable version, and extract the zip.
 
 To run the application using the default DFP file and a single camera as input, use the following command:
 
@@ -238,12 +249,12 @@ A more detailed tutorial with complete code explanations is available on the [Me
 
 This project uses third-party software, models, and libraries. Below are the details of the licenses for these dependencies:
 
-- **Model**: [Yolov7 Tiny from GitHub](https://github.com/WongKinYiu/yolov7) 🔗 
-  - License: [GPL](https://github.com/WongKinYiu/yolov7/blob/main/LICENSE.md) 🔗
+- **Model**:  [Yolo26n from Ultralytics GitHub](https://docs.ultralytics.com/models/yolo26/) 🔗 
+  - License: [AGPLv3](https://github.com/ultralytics/ultralytics/blob/main/LICENSE)🔗
 
-- **Code and Pre/Post-Processing**: Some code components, including pre/post-processing, were sourced from their [GitHub](https://github.com/WongKinYiu/yolov7)  
-  - License: [GPL](https://github.com/WongKinYiu/yolov7/blob/main/LICENSE.md) 🔗
+- **Code and Pre/Post-Processing**: Some code components, including pre/post-processing, were sourced from their [GitHub](https://github.com/ultralytics/ultralytics)
+  - License: [AGPLv3](https://github.com/ultralytics/ultralytics/blob/main/LICENSE) 🔗
 
 ## Summary
 
-This guide offers a quick and easy way to run multi stream object detection using the Yolov7 Tiny model on MemryX accelerators. You can use either the Python or C++ implementation to perform real-time inference. Download the full code and the pre-compiled DFP file to get started immediately.
+This guide offers a quick and easy way to run multi stream object detection using the Yolo26n model on MemryX accelerators. You can use either the Python or C++ implementation to perform real-time inference. Download the full code and the pre-compiled DFP file to get started immediately.

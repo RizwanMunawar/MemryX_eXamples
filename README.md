@@ -78,13 +78,13 @@ Leverage MemryX accelerators for **real-time video processing** tasks. These app
 <table>
   <tr>
     <td align="center" valign="top" width="25%">
-      <a href="video_inference/singlestream_objectdetection_yolov7Tiny/README.md"><b>YOLOv7</b></a>
+      <a href="video_inference/singlestream_objectdetection_yolo26/README.md"><b>YOLO26</b></a>
       <a href="https://developer.memryx.com/tutorials/realtime_inf/realtime_od.html">📝</a><br/>
-      <a href="video_inference/singlestream_objectdetection_yolov7Tiny/README.md">
-        <img src="video_inference/singlestream_objectdetection_yolov7Tiny/assets/objectDetection_yolov7tiny.png" style="height:165px; object-fit:cover;" />
+      <a href="video_inference/singlestream_objectdetection_yolo26/README.md">
+        <img src="video_inference/singlestream_objectdetection_yolo26/assets/objectDetection_yolo26n.png" style="height:165px; object-fit:cover;" />
       </a><br/>
       <sub>COCO object detection</sub><br/>
-      <sub>Model: YOLOv7 (Tiny)</sub><br/>
+      <sub>Model: YOLO26 (nano)</sub><br/>
       <img alt="Python" src="https://img.shields.io/badge/Python-green" />
       <img alt="Linux"   src="https://upload.wikimedia.org/wikipedia/commons/3/35/Tux.svg"  width="20" height="20" />
     </td>
@@ -309,12 +309,12 @@ Leverage MemryX accelerators for **real-time video processing** tasks. These app
     </td>
     <!-- new cell -->
     <td align="center" valign="top" width="25%">
-      <a href="video_inference/singlestream_peopletracking_yolov7Tiny/README.md"><b>Person Tracking</b></a><br/>
-      <a href="video_inference/singlestream_peopletracking_yolov7Tiny/README.md">
-        <img src="video_inference/singlestream_peopletracking_yolov7Tiny/assets/people_counting.gif" style="height:165px; object-fit:cover;" />
+      <a href="video_inference/singlestream_peopletracking_yolo26/README.md"><b>Person Tracking</b></a><br/>
+      <a href="video_inference/singlestream_peopletracking_yolo26/README.md">
+        <img src="video_inference/singlestream_peopletracking_yolo26/assets/people_counting.gif" style="height:165px; object-fit:cover;" />
       </a><br/>
       <sub>Person tracking + IDs</sub><br/>
-      <sub>Model: YOLOv7 (Tiny)</sub><br/>
+      <sub>Model: YOLO26 (nano)</sub><br/>
       <img alt="Python" src="https://img.shields.io/badge/Python-green" />
       <img alt="Linux"  src="https://upload.wikimedia.org/wikipedia/commons/3/35/Tux.svg"  width="20" height="20" />
     </td>
@@ -440,13 +440,13 @@ Maximize performance by running multiple video streams concurrently on MemryX ac
     </td>
     <!-- new cell -->
     <td align="center" valign="top" width="33%">
-      <a href="multistream_video_inference/multistream_objectdetection_yolov7Tiny/README.md"><b>Multi-Stream YOLOv7</b></a>
+      <a href="multistream_video_inference/multistream_objectdetection_yolo26/README.md"><b>Multi-Stream YOLO26</b></a>
       <a href="https://developer.memryx.com/tutorials/multistream_realtime_inf/multistream_od.html">📝</a><br/>
-      <a href="multistream_video_inference/multistream_objectdetection_yolov7Tiny/README.md">
-        <img src="multistream_video_inference/multistream_objectdetection_yolov7Tiny/assets/yolov7_objectDetection_multistream.png" style="height:165px; object-fit:cover;" />
+      <a href="multistream_video_inference/multistream_objectdetection_yolo26/README.md">
+        <img src="multistream_video_inference/multistream_objectdetection_yolo26/assets/yolo26n_objectDetection_multistream.png" style="height:165px; object-fit:cover;" />
       </a><br/>
       <sub>Detect objects across multiple streams</sub><br/>
-      <sub>Model: YOLOv7 (Tiny)</sub><br/>
+      <sub>Model: YOLO26 (nano)</sub><br/>
       <img alt="Python" src="https://img.shields.io/badge/Python-green" />
       <img alt="C++" src="https://img.shields.io/badge/C++-blue" />
       <img alt="Linux"  src="https://upload.wikimedia.org/wikipedia/commons/3/35/Tux.svg"  width="20" height="20" />

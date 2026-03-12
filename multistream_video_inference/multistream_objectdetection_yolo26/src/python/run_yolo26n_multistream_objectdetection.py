@@ -2,14 +2,14 @@
 ============
 Information:
 ============
-Project: YOLOv7-tiny example code on MXA
+Project: YOLOv26 example code on MXA
 File Name: run_on_mxa.py
 
 ============
 Description:
 ============
 A script to show how to use the MultiStreamAcclerator API to perform a real-time inference
-on MX3 using YOLOv7-tiny model.
+on MX3 using YOLOv26 model.
 """
 
 ###############################################################################
@@ -24,16 +24,16 @@ from queue import Queue, Full
 from threading import Thread
 from matplotlib import pyplot as plt
 from memryx import MultiStreamAsyncAccl
-from yolov7 import YoloV7Tiny as YoloModel
+from yolov26 import YoloV26 as YoloModel
 
 
 ###############################################################################
 # Class with necessary methods to run the application #########################
 ###############################################################################
 
-class Yolo7Mxa:
+class Yolo26Mxa:
     """
-    A demo app to run YOLOv7 on the MemryX MXA.
+    A demo app to run YOLOv26 on the MemryX MXA.
     """
 
     ###############################################################################
@@ -101,7 +101,7 @@ class Yolo7Mxa:
         """
         print("dfp path = ", self.dfp_path)
         accl = MultiStreamAsyncAccl(dfp=self.dfp_path)
-        print("YOLOv7-Tiny inference on MX3 started")
+        print("YOLOv26 inference on MX3 started")
         accl.set_postprocessing_model(self.postmodel_path, model_idx=0)
 
         self.display_thread.start()
@@ -204,7 +204,7 @@ class Yolo7Mxa:
 
                     # Show the frame in a unique window for each stream
                     if self.show:
-                        window_name = f"Stream {stream_idx} - YOLOv7-Tiny"
+                        window_name = f"Stream {stream_idx} - YOLOv26"
                         cv2.imshow(window_name, frame)
 
             # Exit on key press (applies to all streams)
@@ -225,8 +225,8 @@ def main(args):
     The main funtion
     """
 
-    yolo7_inf = Yolo7Mxa(video_paths = args.video_paths, dfp_path=args.dfp, postmodel_path=args.postmodel, show=args.show,)
-    yolo7_inf.run()
+    yolo26_inf = Yolo26Mxa(video_paths = args.video_paths, dfp_path=args.dfp, postmodel_path=args.postmodel, show=args.show,)
+    yolo26_inf.run()
 
 ###############################################################################
 
@@ -237,13 +237,13 @@ if __name__=="__main__":
     
     parser.add_argument('-d', '--dfp', 
                         type=str, 
-                        default="../../models/YOLO_v7_tiny_416_416_3_onnx.dfp", 
-                        help="Specify the path to the compiled DFP file. Default is 'models/YOLO_v7_tiny_416_416_3_onnx.dfp'.")
+                        default="../../models/YOLO26_nano_640_640_3_onnx.dfp", 
+                        help="Specify the path to the compiled DFP file. Default is 'models/yolov26_640_640.dfp'.")
     
     parser.add_argument('-m', '--postmodel', 
                         type=str, 
-                        default="../../models/YOLO_v7_tiny_416_416_3_onnx_post.onnx", 
-                        help="Specify the path to the post-processing model. Default is 'models/YOLO_v7_tiny_416_416_3_onnx_post.onnx'.")
+                        default="../../models/YOLO26_nano_640_640_3_onnx_post.onnx", 
+                        help="Specify the path to the post-processing model. Default is 'models/yolov26_640_640_post.onnx'.")
 
     parser.add_argument('--video_paths', nargs='+',  dest="video_paths", 
                         action="store", 
