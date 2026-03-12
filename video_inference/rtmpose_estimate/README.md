@@ -14,7 +14,7 @@ The **RTMPose** example showcases real-time pose estimation with tracking using 
 | **Model Type**       | Human detection & rtmpose  Estimation                                                        |
 | **Framework**        | [onnx](https://onnx.ai/) 🔗
 | **Model Source**     | [Yolox](https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/onnx_sdk/yolox_tiny_8xb8-300e_humanart-6f3252f9.zip) 🔗   [Rtmpose](https://mmdeploy-oss.openmmlab.com/model/mmpose/rtmpose-s-d976b6.onnx) 🔗
-| **Pre-compiled DFP** | [Download here](https://developer.memryx.com/example_files/2p0/yolox_rtmpose.zip)
+| **Pre-compiled DFP** | [Download here](https://developer.memryx.com/example_files/2p2/yolox_rtmpose.zip)
 | **Input**            | Input size for Yolox: (416,416,3), Input size for Rtmpose : (256,192,3)
 | **Output**           | Keypoints
 | **OS**               | Linux
@@ -35,7 +35,7 @@ pip install lap
 
 To download and unzip the precompiled DFPs, use the following commands:
 ```bash
-wget https://developer.memryx.com/example_files/2p0/yolox_rtmpose.zip
+wget https://developer.memryx.com/example_files/2p2/yolox_rtmpose.zip
 mkdir -p models
 unzip yolox_rtmpose.zip -d models
 ```
@@ -59,7 +59,7 @@ mv rtmpose-s-d976b6.onnx  rtmpose-s.onnx
 You can now use the MemryX Neural Compiler to compile the model and generate the DFP file required by the accelerator:
 
 ```bash
-mx_nc -m models/yolox.onnx models/rtmpose-s.onnx  --extensions Rtmpose --autocrop --no_split_upsampling -c 4
+mx_nc -m yolox.onnx rtmpose-s.onnx  --extensions Rtmpose --autocrop --no_split_upsampling -c 4
 ```
 
 </details>
