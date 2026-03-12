@@ -33,7 +33,7 @@ pip install lap==0.5.12
 
 To download and unzip the precompiled DFPs, use the following commands:
 ```bash
-wget https://developer.memryx.com/example_files/2p0/face_recognition.zip
+wget https://developer.memryx.com/example_files/2p2/face_recognition.zip
 mkdir -p models
 unzip face_recognition.zip -d models
 ```
