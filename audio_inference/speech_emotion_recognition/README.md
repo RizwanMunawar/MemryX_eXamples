@@ -67,7 +67,7 @@ mv /path_where_the_saved_model_is_currently_located/ models
 Now you may compile the model. Run the following command to generate the DFP. 
 
 ```bash
- mx_nc ser_model.h5 -v 
+ mx_nc -m ser_model.h5 -v 
 ```
 
 This completes the process of download and compilation. 
