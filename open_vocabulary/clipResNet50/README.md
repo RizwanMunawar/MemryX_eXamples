@@ -17,7 +17,7 @@ CLIP is pretrained on image–text pairs and can **classify without task-specifi
 | **Model Type**       | Zero-shot image–text matching / classification                                                       |
 | **Framework**        | [onnx](https://onnx.ai/)                                                   |
 | **Model Source**     | [Download](https://github.com/openai/CLIP) |
-| **Pre-compiled DFP** | [Download here](https://developer.memryx.com/example_files/ClipResNet50.zip)                                           |
+| **Pre-compiled DFP** | [Download here](https://developer.memryx.com/example_files/2p2/ClipResNet50.zip)                                           |
 | **Input**        | Any RGB image |
 | **Output**       | class label                                     |
 | **OS**               | Linux |
@@ -44,7 +44,7 @@ pip3 install -r requirements.txt
 To download and unzip the precompiled DFPs, use the following commands:
 
 ```bash
-wget https://developer.memryx.com/example_files/ClipResNet50.zip
+wget https://developer.memryx.com/example_files/2p2/ClipResNet50.zip
 mkdir -p models
 unzip ClipResNet50.zip -d models
 ```
@@ -52,7 +52,7 @@ unzip ClipResNet50.zip -d models
 
 <details> 
 <summary> (Optional) Download and compile the model yourself </summary>
-If you need to compile the YOLOE model and generate the DFP file manually under models folder.
+If needed, you can compile the CLIP model manually and generate the DFP file under the models folder. Alternatively, you can convert the image encoder to an ONNX model and compile it.
 
 ```bash
 wget https://developer.memryx.com/example_files/ClipResNet50.zip
