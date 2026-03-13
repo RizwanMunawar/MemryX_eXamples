@@ -23,7 +23,7 @@ utilizes `MXObb` to identify and count objects within an image.
 | **Model Type**       | Object Detection (Oriented Bounding Boxes)                                                                              |
 | **Framework**        | [Onnx](https://onnx.ai/)                                                                                                |
 | **Model Source**     | [YoloV8m-OBB](https://github.com/ultralytics/ultralytics)                                                               |
-| **Pre-compiled DFP** | [Download here](https://developer.memryx.com/model_explorer/2p0/YOLO_v8_small_Oriented_Bounding_Boxes_1024_1024_3_onnx.zip) |
+| **Pre-compiled DFP** | [Download here](https://developer.memryx.com/model_explorer/2p2/YOLO_v8_small_Oriented_Bounding_Boxes_1024_1024_3_onnx.zip) |
 | **Output**           | Object bounding box + keypoints                                                                                         |
 | **OS**               | Linux                                                                                                                   |
 | **License**          | [AGPL](LICENSE.md)                                                                                                      |
@@ -42,7 +42,7 @@ pip install ultralytics==8.3.161
 
 To download and unzip the precompiled DFPs, use the following commands:
 ```bash
-chmod +x models/download_model.sh; ./models/download_model.sh;
+chmod +x download_model.sh; ./download_model.sh;
 ```
 
 <details>
@@ -50,8 +50,9 @@ chmod +x models/download_model.sh; ./models/download_model.sh;
 If you prefer, you can download and compile the model rather than using the precompiled version. Download the pre-trained YoloV8m-OBB model:
 
 ```bash
+mkdir -p models/
 cd models/
-python3 export_model.py
+python -c "from ultralytics import YOLO; YOLO('yolov8s-obb.pt').export(format='onnx')"
 ```
 
 You can now use the MemryX Neural Compiler to compile the model and generate the DFP file required by the accelerator:
