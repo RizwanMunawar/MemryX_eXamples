@@ -69,7 +69,7 @@ mv 1.tflite Audio_classification_YamNet_96_64_1_tflite.tflite
 Now you may compile the model. Run the following command to generate the DFP. 
 
 ```bash
- mx_nc Audio_classification_YamNet_96_64_1_tflite.tflite -v --autocrop
+ mx_nc -m Audio_classification_YamNet_96_64_1_tflite.tflite -v --autocrop
 ```
 
 This completes the process of download and compilation. 

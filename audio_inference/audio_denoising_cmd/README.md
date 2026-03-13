@@ -64,7 +64,7 @@ Now you may compile the model. Run the following command to generate the DFP.
 
 
 ```bash
- mx_nc Audio_Denoising_UNet_128_128_1_keras.h5 -v 
+ mx_nc -m Audio_Denoising_UNet_128_128_1_keras.h5 -v 
 ```
 
 This completes the process of download and compilation. 
