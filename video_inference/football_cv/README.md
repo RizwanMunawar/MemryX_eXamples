@@ -15,7 +15,7 @@ The **FootballCV** example demonstrates real-time football/soccer video analysis
 | **Model Type**       | Object Detection
 | **Framework**        | [ONNX](https://onnx.ai/) 
 | **Model Source**     | [Download from Ultralytics GitHub or docs](https://docs.ultralytics.com/models/yolov8/)
-| **Pre-compiled DFP** | [Download here](https://developer.memryx.com/example_files/2p0/footballcv_v8s_640_640_3.zip)
+| **Pre-compiled DFP** | [Download here](https://developer.memryx.com/example_files/2p2/footballcv_v8s_640_640_3.zip)
 | **Input**            | 640x640 (default)
 | **Output**           | video with annotations and information (matches original video size)
 | **License**          | [AGPL](LICENSE.md)
@@ -27,11 +27,7 @@ Before running the application, ensure that MemryX hardware and software are ins
 Also, ensure the following dependencies are installed.
 
 ```bash
-pip install PyQt5==5.15.11
-```
-
-```bash
-pip install opencv-python==4.11.0.86
+pip install PyQt5==5.15.11 opencv-python==4.11.0.86
 ```
 
 
@@ -44,7 +40,7 @@ To download and unzip the pre-compiled DFPs, use the following commands:
 mkdir -p models
 cd models
 
-wget https://developer.memryx.com/example_files/2p0/footballcv_v8s_640_640_3.zip
+wget https://developer.memryx.com/example_files/2p2/footballcv_v8s_640_640_3.zip
 unzip footballcv_v8s_640_640_3.zip
 
 rm footballcv_v8s_640_640_3.zip
@@ -64,7 +60,7 @@ cd models
 You can download the pre-trained YOLOv8s model using the following commands:
 
 ```bash
-wget https://developer.memryx.com/example_files/2p0/footballcv_v8s_640_640_3_model_onnx.zip
+wget https://developer.memryx.com/example_files/2p2/footballcv_v8s_640_640_3_model_onnx.zip
 unzip footballcv_v8s_640_640_3_model_onnx.zip
 rm footballcv_v8s_640_640_3_model_onnx.zip
 ```
@@ -131,6 +127,10 @@ This project uses third-party software, models, and libraries. Below are the det
     
 - **Dataset**: [Roboflow](https://universe.roboflow.com/roboflow-jvuqo/football-players-detection-3zvbc)  
   - [© 2025 Roboflow, Inc.](https://creativecommons.org/licenses/by/4.0/deed.en) 🔗
+
+- **Sample Video**: [Match Video](https://drive.google.com/file/d/1t6agoqggZKx6thamUuPAIdN_1zR9v9S_/view?usp=sharing) 🔗  
+  - Source: [Football Analysis Repository](https://github.com/abdullahtarek/football_analysis) 🔗  
+  - [MIT License](https://github.com/abdullahtarek/football_analysis/blob/main/LICENSE) 🔗
 
 ## Credits & Attribution
 
