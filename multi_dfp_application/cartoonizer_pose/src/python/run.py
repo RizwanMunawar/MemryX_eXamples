@@ -6,12 +6,12 @@ import cv2 as cv
 import numpy as np
 from collections import deque
 import argparse
+import threading
 from multiprocessing import Process, Queue, Event
-from memryx import AsyncAccl
+from memryx import AsyncAccl, SchedulerOptions, ClientOptions
 from apps import Cartoonizer, PoseEstmiation
 from PyQt5.QtWidgets import QApplication
 from displayer import Displayer
-from memryx.runtime import SchedulerOptions, ClientOptions
 
 def parse_args():
     parser = argparse.ArgumentParser(description="Cartoonizer and Pose Estimation demo with Multi-DFP")
@@ -46,7 +46,6 @@ def run_cartoonizer(queue, dfp_path, display_thread, src_is_cam, frame_limit, st
     sched_opts = SchedulerOptions(
         frame_limit,    # frame_limit: Max frames before DFP swap
         0,              # time_limit (ms): No time-based swap limit
-        False,          # stop_on_empty: Keep DFP active even if input is empty
         24,             # ifmap_queue_size: Input queue capacity
         24              # ofmap_queue_size: Output queue capacity per client
     )
@@ -64,7 +63,7 @@ def run_cartoonizer(queue, dfp_path, display_thread, src_is_cam, frame_limit, st
     return accl
 
 def run_pose_estimation(queue, dfp_path, pose_post_model, input_shape, display_thread, src_is_cam, frame_limit, stop_flag):
-    sched_opts = SchedulerOptions(frame_limit, 0, False, 24, 24)
+    sched_opts = SchedulerOptions(frame_limit, 0, 24, 24)
     client_opts = ClientOptions(True, 30.0)
     accl = AsyncAccl(
         dfp_path,
@@ -117,6 +116,12 @@ def main():
     finally:
         print("[MAIN] App shutting down, signaling threads to stop...")
         stop_flag.set()
+        
+        # Force exit after timeout
+        def force_exit():
+            threading.Timer(5.0, lambda: os._exit(0)).start()
+        force_exit()
+        
         accl.wait()
         accl2.wait()
 
