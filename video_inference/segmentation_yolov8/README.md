@@ -14,7 +14,8 @@ The **Segmentation** example demonstrates real-time Segmentation inference using
 | **Model Type**       | Segmentation                                                        |
 | **Framework**        | [onnx](https://onnx.ai/),[ tflite](https://www.tensorflow.org/)                                                  |
 | **Model Source**     | [Download from Ultralytics GitHub or docs](https://docs.ultralytics.com/models/yolov8/) |
-| **Pre-compiled DFP** | [Download here](https://developer.memryx.com/example_files/2p0/segmentation_yolov8.zip)                                           |
+| **Pre-compiled DFP** | [Download here (ONNX)](https://developer.memryx.com/model_explorer/2p2/YOLO_v8_nano_seg_640_640_3_onnx.zip) 
+[Download here (TFLite)](https://developer.memryx.com/example_files/2p2/YOLO_v8_nano_seg_640_640_3_tflite.zip)                                          |
 | **Model Resolution** | 640x640                                                       |
 | **Output**           | Bounding boxes for detected objects, confidence scores, class labels, and segmentation masks |
 | **OS**               | Linux |
@@ -36,10 +37,15 @@ pip install ultralytics==8.3.161
 
 ### Step 1: Download Pre-compiled DFP
 
-To download and unzip the precompiled DFPs, use the following commands:
+To download and unzip the precompiled DFPs, use the following commands: (Both tflite and ONNX is supported)
 ```bash
-wget https://developer.memryx.com/example_files/2p0/segmentation_yolov8.zip
-unzip segmentation_yolov8.zip
+wget https://developer.memryx.com/model_explorer/2p2/YOLO_v8_nano_seg_640_640_3_onnx.zip
+mkdir -p models/onnx
+unzip YOLO_v8_nano_seg_640_640_3_onnx.zip -d models/onnx
+
+wget https://developer.memryx.com/example_files/2p2/YOLO_v8_nano_seg_640_640_3_tflite.zip
+mkdir -p models/tflite
+unzip -j YOLO_v8_nano_seg_640_640_3_tflite.zip -d models/tflite
 ```
 
 <details> 
@@ -120,7 +126,7 @@ You can specify the model path and DFP (Compiled Model) path using the following
 
 * `-d` or `--dfp`:  Path to the compiled DFP file (default is ../../models/onnx/YOLO_v8_nano_seg_640_640_3_onnx.dfp)
 * `-p` or `--post_model`: Path to the post-processing model file or NumPy-based implementation post-processing (default: numpy).<br>
-Specify `-p numpy` to skip the post-processing model and use a NumPy-based implementation instead, which can offer better performance. (Note: The NumPy post-processing option is only supported for ONNX DFP models.)
+Specify `-p numpy` to skip the post-processing model and use a NumPy-based implementation instead, which can offer better performance. **(Note: The NumPy post-processing option is only supported for ONNX DFP models.)**
 * `--no_display`: specify this flag to turn off display (Usually for more accurate FPS measurement)
 * `--video`: Path to a video file or camera device for inference
 (use /dev/video0 for webcam input, default: /dev/video0)
