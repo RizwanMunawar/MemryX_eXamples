@@ -30,7 +30,7 @@ pip install opencv-python==4.11.0.86
 
 To download and unzip the precompiled DFPs, and use the following commands:
 ```bash
-wget https://developer.memryx.com/example_files/2p0/mlperf_accuracycalc_resnet50_v1.zip
+wget https://developer.memryx.com/example_files/2p2/mlperf_accuracycalc_resnet50_v1.zip
 mkdir -p models
 unzip mlperf_accuracycalc_resnet50_v1.zip -d models
 ```
