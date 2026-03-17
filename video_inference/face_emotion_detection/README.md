@@ -14,7 +14,7 @@ The **Face Detection & Emotion Classification** example demonstrates real-time F
 | **Model Type**       | Face Detection and Emotion Classification                                                        |
 | **Framework**        | [TensorFlow](https://www.tensorflow.org/)                                                   |
 | **Model Source**     | [Download from GitHub for Face Detection](https://github.com/patlevin/face-detection-tflite/raw/main/fdlite/data/face_detection_short_range.tflite) and [Download from GitHub for Emotion Recognition](https://github.com/sb-ai-lab/EmotiEffLib/raw/main/models/affectnet_emotions/mobilenet_7.h5) |
-| **Pre-compiled DFP** | [Download here](https://developer.memryx.com/example_files/2p0/face_emotion_detection.zip)                                         |
+| **Pre-compiled DFP** | [Download here](https://developer.memryx.com/example_files/2p2/face_emotion_detection.zip)                                         |
 | **Model Resolution** | 128 x 128 (Face Detection)  and 224 x 224  (Emotion Recognition)                                      |
 | **Output**           | Face Bounding boxes and Emotion classes |
 | **OS**               | Linux |
@@ -43,7 +43,7 @@ pip install opencv-python==4.11.0.86
 
 To download and unzip the precompiled DFPs, use the following commands:
 ```bash
-wget https://developer.memryx.com/example_files/2p0/face_emotion_detection.zip
+wget https://developer.memryx.com/example_files/2p2/face_emotion_detection.zip
 mkdir -p models
 unzip face_emotion_detection.zip -d models
 ```
