@@ -314,7 +314,8 @@ Leverage MemryX accelerators for **real-time video processing** tasks. These app
       <a href="video_inference/singlestream_peopletracking_yolo26/README.md">
         <img src="video_inference/singlestream_peopletracking_yolo26/assets/people_counting.gif" style="height:165px; object-fit:cover;" />
       </a><br/>
-      <sub>Person tracking + IDs</sub><br/>
+      <sub>Person tracking + IDs using</sub><br/>
+      <sub>simple Kalman filters</sub><br/>
       <sub>Model: YOLO26 (nano)</sub><br/>
       <img alt="Python" src="https://img.shields.io/badge/Python-green" />
       <img alt="Linux"  src="https://upload.wikimedia.org/wikipedia/commons/3/35/Tux.svg"  width="20" height="20" />
