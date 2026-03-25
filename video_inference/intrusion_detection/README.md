@@ -17,7 +17,7 @@ The **intrusion detection** example demonstrates real-time detection of intrudin
 | **Model Type**       | Object Detection, Tracking
 | **Framework**        | [Tflite](https://www.tensorflow.org/)
 | **Model Source**     | [Download from ultralytics](https://docs.ultralytics.com/models/yolov8/)
-| **Pre-compiled DFP** | [Download here](https://developer.memryx.com/example_files/2p2/yolov8m_intrusion_detection.zip)
+| **Pre-compiled DFP** | [Download here](https://developer.memryx.com/model_explorer/2p2/YOLO_v8_medium_640_640_3_tflite.zip)
 | **Input**            | 640x640x3
 | **Output**           | Bounding boxes, confidence scores, Tracking Ids.
 | **OS**               | Linux
@@ -37,9 +37,9 @@ pip3 install -r requirements.txt
 
 To download and unzip the precompiled DFPs, use the following commands:
 ```bash
-wget https://developer.memryx.com/example_files/2p2/yolov8m_intrusion_detection.zip
+wget https://developer.memryx.com/model_explorer/2p2/YOLO_v8_medium_640_640_3_tflite.zip
 mkdir -p models
-unzip yolov8m_intrusion_detection.zip -d models
+unzip YOLO_v8_medium_640_640_3_tflite.zip -d models
 ```
 
 
