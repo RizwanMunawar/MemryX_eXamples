@@ -14,7 +14,7 @@ The **Chrome Dinosaur Game** example demonstrates how to control the Google Chro
 | **Model Type**       | Chrome Dinosaur Game                                                        |
 | **Framework**        | [TensorFlow](https://www.tensorflow.org/)                                                       |
 | **Model Source**     | [Download from MediaPipe GitHub](https://storage.googleapis.com/mediapipe-assets/palm_detection_lite.tflite) |
-| **Pre-compiled DFP** | [Download here](https://developer.memryx.com/model_explorer/2p0/MediaPipe_palm_Detection_192_192_3_tflite.zip)                                           |
+| **Pre-compiled DFP** | [Download here](https://developer.memryx.com/model_explorer/2p2/MediaPipe_palm_Detection_192_192_3_tflite.zip)                                           |
 | **Model Resolution** | 192x192 (default)                                                       |
 | **OS**               | Linux                                                       |
 | **License**          | [MIT](LICENSE.md)                                     |
@@ -68,7 +68,7 @@ google-chrome-stable
 
 To download and unzip the precompiled DFPs, use the following commands:
 ```bash
-wget https://developer.memryx.com/model_explorer/2p0/MediaPipe_palm_Detection_192_192_3_tflite.zip
+wget https://developer.memryx.com/model_explorer/2p2/MediaPipe_palm_Detection_192_192_3_tflite.zip
 mkdir -p models
 unzip MediaPipe_palm_Detection_192_192_3_tflite.zip -d models
 ```
