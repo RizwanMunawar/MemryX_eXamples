@@ -15,7 +15,7 @@ This example also showcases using Qt for the GUI and demonstrates how to integra
 | **Model Type**       | Line Segment Detection                                                       
 | **Framework**        | [TensorFlow Lite](https://www.tensorflow.org/) 🔗                                                   
 | **Model Source**     | [M-LSD GitHub Repository](https://github.com/navervision/mlsd) 🔗, [PINTO Model Zoo - M-LSD](https://github.com/PINTO0309/PINTO_model_zoo/tree/main/119_M-LSD) 🔗
-| **Pre-compiled DFP** | [Download here](https://developer.memryx.com/model_explorer/2p0/M_LSD_512_512_4_tflite.zip)                                           
+| **Pre-compiled DFP** | [Download here](https://developer.memryx.com/model_explorer/2p2/M_LSD_512_512_4_tflite.zip)                                           
 | **Output**           | Wireframe coordinates and scores                
 | **OS**               | Linux
 | **License**          | [MIT](LICENSE.md)                                         
@@ -34,7 +34,7 @@ pip install opencv-python==4.11.0.86 PySide6
 
 To download and unzip the precompiled DFPs, use the following commands:
 ```bash
-wget https://developer.memryx.com/model_explorer/2p0/M_LSD_512_512_4_tflite.zip
+wget https://developer.memryx.com/model_explorer/2p2/M_LSD_512_512_4_tflite.zip
 mkdir -p models
 unzip M_LSD_512_512_4_tflite.zip -d models
 ```
@@ -82,14 +82,13 @@ python run_wireframe.py
 You can specify the model path and DFP (Compiled Model) path with the following options:
 
 * `-d` or `--dfp`: Path to the compiled DFP file (default is `../assets/M_LSD_512_512_4_tflite.dfp`)
-* `--premodel`: Path to the pre-processing model file
 * `--postmodel`: Path to the post-processing model file
 
 For example, to run with specific pre and post models along with a DFP file, use:
 
 ```bash
 cd scr
-python run_wireframe.py --premodel <premodel_path> --postmodel <postmodel_path> -d <dfp_path>
+python run_wireframe.py --postmodel <postmodel_path> -d <dfp_path>
 ```
 
 If no arguments are provided, the script will use the default paths.
