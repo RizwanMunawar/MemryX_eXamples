@@ -53,7 +53,7 @@ class MxHandPose:
 
         # 
         dfp_path               = os.path.join(mx_modeldir, 'models.dfp')
-        palmdet_postprocess    = os.path.join(mx_modeldir, 'model_1_palm_detection_lite_post.tflite')
+        palmdet_postprocess    = os.path.join(mx_modeldir, 'model_1_palm_detection_full_post.tflite')
 
         # Initialize the accelerator with the model
         self.accl = AsyncAccl(dfp_path, device_ids=0)
