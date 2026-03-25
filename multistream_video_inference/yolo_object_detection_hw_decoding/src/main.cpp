@@ -411,9 +411,6 @@ int main(int argc, char* argv[]) {
                 } else if (model_name == "11n320") {
                     model_path = "../../assets/models/11n320/model.dfp";
                     post_path = "../../assets/models/11n320/post.onnx";
-                } else if (model_name == "11n480-opt") {
-                    model_path = "../../assets/models/11n480-opt/model.dfp";
-                    post_path = "../../assets/models/11n480-opt/post.onnx";
                 } else if (model_name == "11n640-opt") {
                     model_path = "../../assets/models/11n640-opt/model.dfp";
                     post_path = "../../assets/models/11n640-opt/post.onnx";
@@ -423,12 +420,6 @@ int main(int argc, char* argv[]) {
                 } else if (model_name == "11s320") {
                     model_path = "../../assets/models/11s320/model.dfp";
                     post_path = "../../assets/models/11s320/post.onnx";
-                } else if (model_name == "11s480-opt") {
-                    model_path = "../../assets/models/11s480-opt/model.dfp";
-                    post_path = "../../assets/models/11s480-opt/post.onnx";
-                } else if (model_name == "11s640-opt") {
-                    model_path = "../../assets/models/11s640-opt/model.dfp";
-                    post_path = "../../assets/models/11s640-opt/post.onnx";
                 } else if (model_name == "11m320") {
                     model_path = "../../assets/models/11m320/model.dfp";
                     post_path = "../../assets/models/11m320/post.onnx";

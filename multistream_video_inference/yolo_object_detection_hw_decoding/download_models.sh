@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Base URL for all model downloads
-BASE_URL="https://developer.memryx.com/model_explorer/2p1"
+BASE_URL="https://developer.memryx.com/model_explorer/2p2"
 
 # Model URL paths - Fill in the custom path portion after the base URL for each model
 # Each URL should point to a zip file containing both model.dfp and post.onnx
@@ -26,21 +26,18 @@ MODEL_PATHS["10m320"]="YOLO_v10_medium_320_320_3_onnx.zip"
 MODEL_PATHS["10m480"]="YOLO_v10_medium_480_480_3_onnx.zip"
 
 # YOLOv11 models
-MODEL_PATHS["11n320"]="YOLO_v11_nano_320_320_3_onnx.zip"
-MODEL_PATHS["11n480-opt"]="YOLO_v11_nano_MXA_Optimized_480_480_3_onnx.zip"
-MODEL_PATHS["11n640-opt"]="YOLO_v11_nano_MXA_Optimized_640_640_3_onnx.zip"
-MODEL_PATHS["11n800-opt"]="YOLO_v11_nano_MXA_Optimized_800_800_3_onnx.zip"
-MODEL_PATHS["11s320"]="YOLO_v11_small_320_320_3_onnx.zip"
-MODEL_PATHS["11s480-opt"]="YOLO_v11_small_MXA_Optimized_480_480_3_onnx.zip"
-MODEL_PATHS["11s640-opt"]="YOLO_v11_small_MXA_Optimized_640_640_3_onnx.zip"
-MODEL_PATHS["11m320"]="YOLO_v11_medium_320_320_3_onnx.zip"
+MODEL_PATHS["11n320"]="YOLO11_nano_320_320_3_onnx.zip"
+MODEL_PATHS["11n640-opt"]="YOLO11_nano_MXA_Optimized_640_640_3_onnx.zip"
+MODEL_PATHS["11n800-opt"]="YOLO11_nano_MXA_Optimized_800_800_3_onnx.zip"
+MODEL_PATHS["11s320"]="YOLO11_small_320_320_3_onnx.zip"
+MODEL_PATHS["11m320"]="YOLO11_medium_320_320_3_onnx.zip"
 
 # Array of all supported models
 ALL_MODELS=(
     "8n640" "8s640" "8m640"
     "9t640" "9s640" "9m640"
     "10n320" "10n480" "10s320" "10s480" "10m320" "10m480"
-    "11n320" "11n480-opt" "11n640-opt" "11n800-opt" "11s320" "11s480-opt" "11s640-opt" "11m320"
+    "11n320" "11n640-opt" "11n800-opt" "11s320" "11m320"
 )
 
 # Function to download a single model

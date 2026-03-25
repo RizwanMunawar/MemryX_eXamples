@@ -1,6 +1,6 @@
 # YOLO Object Detection with Hardware-Accelerated Video Decoding
 
-This example demonstrates real-time object detection on multiple input streams using hardware-accelerated video decoding on supported platforms via FFmpeg. The application supports 20 variations of YOLO models on MemryX accelerators. Hardware acceleration via FFmpeg is available for H.264, H.265, and MJPEG-encoded video and camera inputs across Intel, AMD, RockChip, and Broadcom platforms. This guide provides setup instructions, model details, and necessary code snippets to help you quickly get started.
+This example demonstrates real-time object detection on multiple input streams using hardware-accelerated video decoding on supported platforms via FFmpeg. The application supports 17 variations of YOLO models on MemryX accelerators. Hardware acceleration via FFmpeg is available for H.264, H.265, and MJPEG-encoded video and camera inputs across Intel, AMD, RockChip, and Broadcom platforms. This guide provides setup instructions, model details, and necessary code snippets to help you quickly get started.
 
 <p align="center">
   <img src="YOLO_preview.gif" alt="Object Detection Example" width="45%" />
@@ -34,19 +34,19 @@ sudo apt install ffmpeg
 ### Step 1: Download Pre-compiled DFPs
 
 Because this example supports many models, the pre-compiled DFPs can be downloaded and unzipped into the expected directories using the provided bash script. The script can be used
-to download all 20 supported models or a subset of said models depending on your preference. If you're unsure, we recommend downloading all models using the `--all` argument:
+to download all 17 supported models or a subset of said models depending on your preference. If you're unsure, we recommend downloading all models using the `--all` argument:
 
 ```bash
 cd yolo_object_detection_hw_decoding/
 
-# Run to download all 20 supported models:
+# Run to download all 17 supported models:
 ./download_models.sh --all
 
 # Run to download a single model (valid options listed in Step 2): 
 ./download_models.sh 8s640
 
 # Run to download multiple models (valid options listed in Step 2):
-./download_models.sh 8n640 10n320 11s480-opt
+./download_models.sh 8n640 10n320 11n640-opt
 ```
 If you are interested in learning to compile the models on your own, refer to other MemryX Examples for instructions.
 
@@ -54,7 +54,7 @@ If you are interested in learning to compile the models on your own, refer to ot
 
 To run this application, it is important to understand the command-line arguments and their significance.
 
-* `-m`, `--model`: (Optional) Name of the model. Default: 8s640. 20 models are explicitly supported, and the following values are valid arguments.
+* `-m`, `--model`: (Optional) Name of the model. Default: 8s640. 17 models are explicitly supported, and the following values are valid arguments.
   - `8n640` = YOLOv8 nano, 640 resolution
   - `8s640` = YOLOv8 small, 640 resolution
   - `8m640` = YOLOv8 medium, 640 resolution
@@ -68,12 +68,9 @@ To run this application, it is important to understand the command-line argument
   - `10m320` = YOLOv10 medium, 320 resolution
   - `10m480` = YOLOv10 medium, 480 resolution
   - `11n320` = YOLOv11 nano, 320 resolution
-  - `11n480-opt` = YOLOv11 nano, 480 resolution, MXA-optimized
   - `11n640-opt` = YOLOv11 nano, 640 resolution, MXA-optimized
   - `11n800-opt` = YOLOv11 nano, 800 resolution, MXA-optimized
   - `11s320` = YOLOv11 small, 320 resolution
-  - `11s480-opt` = YOLOv11 small, 480 resolution, MXA-optimized
-  - `11s640-opt` = YOLOv11 small, 640 resolution, MXA-optimized
   - `11m320` = YOLOv11 medium, 320 resolution
 * `--cpu_decode`: (Optional) Use CPU for decoding instead of hardware-accelerated decoding. Applies to all input streams.
 * `--video_paths`: (Optional) If using video files for input, specify as a space separated list formatted as path0,codec0 path1,codec1 ...
@@ -111,7 +108,7 @@ This will generate an executable called `main` in the build directory. Run the a
 ./main -m 10n320 --ip_paths rtsp://user:psswd@xxx.xxx.x.xx:port,h264 rtsp://user:psswd@yyy.yyy.y.yy:port,h265 --system amd
 
 # Run with a single H.264-encoded video file as input and use software/CPU decoding on a Rockchip host:
-./main -m 11s480-opt --video_paths path/to/file.mp4,h264 --cpu_decode --system rockchip
+./main -m 11n640-opt --video_paths path/to/file.mp4,h264 --cpu_decode --system rockchip
 
 # Run with a combination of video files, USB cams, and IP cams as input sources on a Broadcom host:
 ./main -m 9t640 --video_paths path/to/file.mp4,h264 --usb_paths /dev/video0 /dev/video2 --ip_paths rtsp://user:psswd@xxx.xxx.x.xx:port,h264 --system broadcom
