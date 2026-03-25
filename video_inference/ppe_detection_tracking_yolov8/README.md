@@ -14,9 +14,9 @@ This guide provides setup instructions, model details, and necessary code snippe
 |----------------------|-------------------------------------------------------------------------|
 | **Model**            | [Yolov8s](https://docs.ultralytics.com/models/yolov8/)                                            |
 | **Model Type**       | Object Detection                                                        |
-| **Model Source**     | [Download here](https://developer.memryx.com/example_files/2p0/ppe_small.pt) |
+| **Model Source**     | [Download here](https://developer.memryx.com/example_files/2p2/ppe_small.pt) |
 | **Framework**        | [ONNX](https://onnx.ai/)                                                   |
-| **Pre-compiled DFP** | [Download here](https://developer.memryx.com/example_files/2p0/ppe_small_640_640_3_onnx.zip)                                      |
+| **Pre-compiled DFP** | [Download here](https://developer.memryx.com/example_files/2p2/ppe_small_640_640_3_onnx.zip)                                      |
 | **Model Resolution** | 640x640                                                       |
 | **Output**           | Object bounding boxes |
 | **OS**               | Linux |
@@ -36,7 +36,7 @@ pip install 'opencv-python~=4.11.0' 'ultralytics~=8.3.161' 'supervision~=0.27.0'
 
 To download and unzip the precompiled DFPs, use the following commands:
 ```bash
-wget https://developer.memryx.com/example_files/2p0/ppe_small_640_640_3_onnx.zip
+wget https://developer.memryx.com/example_files/2p2/ppe_small_640_640_3_onnx.zip
 mkdir -p models
 unzip ppe_small_640_640_3_onnx.zip -d models
 ```
@@ -46,7 +46,7 @@ unzip ppe_small_640_640_3_onnx.zip -d models
 <br>
 If you prefer, you can download and compile the model rather than using the precompiled model. 
 
-Download the [model](https://developer.memryx.com/example_files/2p0/ppe_small.pt) and export it to ONNX:
+Download the [model](https://developer.memryx.com/example_files/2p2/ppe_small.pt) and export it to ONNX:
 
 ```bash
 from ultralytics import YOLO
@@ -62,6 +62,7 @@ You can now use the MemryX Neural Compiler to compile the model and generate the
 
 ```bash
 mx_nc -v -m ppe_small.onnx --autocrop -c 4 --dfp_fname ppe_small_640_640_3_onnx
+mv ppe_small_post.onnx ppe_small_640_640_3_onnx_post.onnx
 ```
 
 Output:

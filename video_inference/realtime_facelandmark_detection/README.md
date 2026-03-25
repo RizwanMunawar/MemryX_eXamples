@@ -28,7 +28,7 @@ pip install opencv-python==4.11.0.86
 
 To download and unzip the precompiled DFPs, use the following commands:
 ```bash
-wget https://developer.memryx.com/example_files/2p0/facelandmark.zip
+wget https://developer.memryx.com/example_files/2p2/facelandmark.zip
 mkdir -p models
 unzip facelandmark.zip -d models
 ```
