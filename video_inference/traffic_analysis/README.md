@@ -33,7 +33,7 @@ pip install opencv-python==4.11.0.86
 | **Model Type**       | Object Detection (Oriented Bounding Boxes)                                                                              |
 | **Framework**        | [Onnx](https://onnx.ai/)                                                                                                |
 | **Model Source**     | [YoloV8s-OBB](https://github.com/ultralytics/ultralytics)                                                               |
-| **Pre-compiled DFP** | [Download here](https://developer.memryx.com/model_explorer/2p0/YOLO_v8_small_Oriented_Bounding_Boxes_1024_1024_3_onnx.zip) |
+| **Pre-compiled DFP** | [Download here](https://developer.memryx.com/model_explorer/2p2/YOLO_v8_small_Oriented_Bounding_Boxes_1024_1024_3_onnx.zip) |
 | **Output**           | Object bounding box + keypoints                                                                                         |
 | **OS**               | Linux                                                                                                                   |
 | **License**          | [AGPL](LICENSE.md)                                                                                                      |
@@ -47,7 +47,7 @@ To download and unzip the precompiled DFPs, use the following commands:
 ```bash
 mkdir models
 
-wget https://developer.memryx.com/model_explorer/2p0/YOLO_v8_small_Oriented_Bounding_Boxes_1024_1024_3_onnx.zip
+wget https://developer.memryx.com/model_explorer/2p2/YOLO_v8_small_Oriented_Bounding_Boxes_1024_1024_3_onnx.zip
 unzip YOLO_v8_small_Oriented_Bounding_Boxes_1024_1024_3_onnx.zip -d models
 mv models/YOLO_v8_small_Oriented_Bounding_Boxes_1024_1024_3_onnx.dfp models/yolov8s-obb.dfp
 mv models/YOLO_v8_small_Oriented_Bounding_Boxes_1024_1024_3_onnx_post.onnx models/yolov8s-obb_post.onnx
