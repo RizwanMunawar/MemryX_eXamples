@@ -251,6 +251,10 @@ class YoloV8:
         # NOTE: In order to speed up, do processing for valid detections only
         if self.model_type == "numpy":
             valid_boxes = self.post.convert_to_xywh(valid_boxes, valid_indices)
+
+        elif self.model_type == "tflite":
+            # Normalize the bounding boxes by scaling with input dimensions
+            valid_boxes = valid_boxes * 640
         
         # Convert bounding box coordinates from (x_center, y_center, w, h) to (left, top, width, height)
         valid_boxes[:, 0] = (valid_boxes[:, 0] - valid_boxes[:, 2] / 2) * x_factor  # left
