@@ -16,7 +16,7 @@ The **Object Detection** & **Pose Estimation** multi-stream example showcases th
 | **Model Type**       | Object Detection  and Pose EStimation                                                    |
 | **Framework**        | [onnx](https://onnx.ai/)                                                   |
 | **Model Source**     | [Download from Ultralytics GitHub or docs](https://docs.ultralytics.com/models/yolov8/) and export to onnx |
-| **Pre-compiled DFP** | [Download here](https://developer.memryx.com/example_files/2p0/objectDet_poseEst_yolov8.zip)   |
+| **Pre-compiled DFP** | [Download here](https://developer.memryx.com/example_files/2p2/objectDet_poseEst_yolov8.zip)   |
 | **Model Resolution** | 640x640                                            |
 | **Output**           | Bounding box coordinates with objectness score, class probabilities and Person bounding boxes and pose landmark coordinates|
 | **OS**               | Linux |
@@ -46,7 +46,7 @@ To download and unzip the precompiled DFPs, use the following commands: (Both tf
 ```bash
 mkdir -p models
 cd models
-wget https://developer.memryx.com/example_files/2p0/objectDet_poseEst_yolov8.zip
+wget https://developer.memryx.com/example_files/2p2/objectDet_poseEst_yolov8.zip
 unzip -j objectDet_poseEst_yolov8.zip
 mv objectDet_poseEst_yolov8/* ./
 ```
