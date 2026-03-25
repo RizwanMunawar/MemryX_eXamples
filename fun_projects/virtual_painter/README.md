@@ -9,8 +9,8 @@ The **Virtual Painter** enables the user to virtually paint in the air in real-t
 | **Model**            | [MediaPipe Palm detection model](https://mediapipe.readthedocs.io/en/latest/solutions/hands.html#palm-detection-model)🔗, [MediaPipe Hand Landmark model](https://mediapipe.readthedocs.io/en/latest/solutions/hands.html#hand-landmark-model)🔗
 | **Model Type**       | Palm Detection & Hand Landmark Models
 | **Framework**        | TFLite
-| **Model Source**     | [Palm Detection Model Lite](https://storage.googleapis.com/mediapipe-assets/palm_detection_lite.tflite)🔗⬇️ ,  [Hand Landmark Model Lite](https://storage.googleapis.com/mediapipe-assets/hand_landmark_lite.tflite)🔗⬇️ from the [google-edge-ai/mediapipe repository](https://github.com/google-ai-edge/mediapipe/blob/master/docs/solutions/models.md#hands)🔗
-| **Pre-compiled DFP** | [Download here](https://developer.memryx.com/example_files/2p0/virtual_painter_using_palmdet_handlandmark.zip)
+| **Model Source**     | [Palm Detection Model (Full)](https://storage.googleapis.com/mediapipe-assets/palm_detection_full.tflite)🔗⬇️ ,  [Hand Landmark Model (Full)](https://storage.googleapis.com/mediapipe-assets/hand_landmark_full.tflite)🔗⬇️ from the [google-edge-ai/mediapipe repository](https://github.com/google-ai-edge/mediapipe/blob/master/docs/solutions/models.md#hands)🔗
+| **Pre-compiled DFP** | [Download here](https://developer.memryx.com/example_files/2p2/virtual_painter_using_palmdet_handlandmark.zip)
 | **Input**            | Input size for Palm Detection Model: (192,192,3), Input size for Hand Landmark model : (224,224,3)
 | **Output**           | Output from HandLandmark model: bounding boxes, landmarks, rotated landmarks, handedness, confidence 
 | **License**          | [MIT License](LICENSE.md)
@@ -42,7 +42,7 @@ To download and unzip the precompiled DFPs, use the following commands:
 
 ```bash
 cd assets
-wget https://developer.memryx.com/example_files/2p0/virtual_painter_using_palmdet_handlandmark.zip
+wget https://developer.memryx.com/example_files/2p2/virtual_painter_using_palmdet_handlandmark.zip
 unzip virtual_painter_using_palmdet_handlandmark.zip
 ```
 
@@ -54,14 +54,14 @@ If you prefer, you can download and compile the model rather than using the prec
 * Palm Detection and HandLandmark models from from the [google-edge-ai/mediapipe repository](https://github.com/google-ai-edge/mediapipe/blob/master/docs/solutions/models.md#hands)🔗
 
 ```bash
-wget https://storage.googleapis.com/mediapipe-assets/palm_detection_lite.tflite -O palm_detection_lite.tflite
-wget https://storage.googleapis.com/mediapipe-assets/hand_landmark_lite.tflite  -O hand_landmark_lite.tflite
+wget https://storage.googleapis.com/mediapipe-assets/palm_detection_full.tflite -O palm_detection_full.tflite
+wget https://storage.googleapis.com/mediapipe-assets/hand_landmark_full.tflite  -O hand_landmark_full.tflite
 ```
 
 You can now use the MemryX Neural Compiler to compile the model and generate the DFP file required by the accelerator:
 
 ```bash
-mx_nc -m hand_landmark_lite.tflite palm_detection_lite.tflite --autocrop -c 4
+mx_nc -m hand_landmark_full.tflite palm_detection_full.tflite --autocrop -c 4
 ```
 </details>
 
@@ -72,7 +72,7 @@ Your folder structure should now be:
 |- assets/
 |  |- gestures_data.pkl
 |  |- virtual_painter.gif
-|  |- model_1_palm_detection_lite_post.tflite    
+|  |- model_1_palm_detection_full_post.tflite    
 |  |- models.dfp
 |  |- settings.json
 |
