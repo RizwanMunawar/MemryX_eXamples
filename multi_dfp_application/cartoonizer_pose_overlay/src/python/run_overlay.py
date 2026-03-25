@@ -2,11 +2,10 @@ import sys
 import cv2 as cv
 import argparse
 from queue import Queue
-from memryx import AsyncAccl
+from memryx import AsyncAccl, SchedulerOptions
 from apps import Cartoonizer, PoseEstimation
 from PyQt5.QtWidgets import QApplication
 from displayer import DisplayerWithCheckboxes
-from memryx.runtime import SchedulerOptions
 from threading import Thread, Event
 import signal
 from constant import *

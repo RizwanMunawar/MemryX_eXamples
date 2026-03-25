@@ -18,7 +18,7 @@ This **Multi-DFP** example demonstrates how two distinct DFPs—Cartoonizer and 
 | **Model Type**       | Cartoonizer and Pose Estimation                                                        |
 | **Framework**        | [ONNX](https://onnx.ai/)                                                   |
 | **Model Source**     | [Cartoonizer](https://github.com/SystemErrorWang/FacialCartoonization/blob/master/weight.pth) and [Pose-Estimation](https://docs.ultralytics.com/models/yolov8/)|
-| **Pre-compiled DFP** | [Cartoonizer](https://developer.memryx.com/model_explorer/2p0/Facial_cartoonizer_512_512_3_onnx.zip) and [Pose-Estimation](https://developer.memryx.com/model_explorer/2p0/YOLO_v8_small_pose_640_640_3_onnx.zip)        |
+| **Pre-compiled DFP** | [Cartoonizer](https://developer.memryx.com/model_explorer/2p2/Facial_cartoonizer_512_512_3_onnx.zip) and [Pose-Estimation](https://developer.memryx.com/model_explorer/2p2/YOLO_v8_small_pose_640_640_3_onnx.zip)        |
 | **Cartoonizer Model Resolution** | 512x512                         
 | **Pose-Estimation Model Resolution** | 640x640                                                       |
 | **Output**           | cartoonized version of the input image and pose landmark coordinates |
@@ -43,12 +43,12 @@ mkdir -p models
 cd models
 
 # Download and extract Facial Cartoonizer
-wget https://developer.memryx.com/model_explorer/2p0/Facial_cartoonizer_512_512_3_onnx.zip
+wget https://developer.memryx.com/model_explorer/2p2/Facial_cartoonizer_512_512_3_onnx.zip
 unzip Facial_cartoonizer_512_512_3_onnx.zip
 rm Facial_cartoonizer_512_512_3_onnx.zip
 
 # Download and extract YOLOv8 Small Pose
-wget https://developer.memryx.com/model_explorer/2p0/YOLO_v8_small_pose_640_640_3_onnx.zip
+wget https://developer.memryx.com/model_explorer/2p2/YOLO_v8_small_pose_640_640_3_onnx.zip
 unzip YOLO_v8_small_pose_640_640_3_onnx.zip
 rm YOLO_v8_small_pose_640_640_3_onnx.zip
 

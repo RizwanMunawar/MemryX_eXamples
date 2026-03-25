@@ -117,7 +117,6 @@ int main(int argc, char* argv[]) {
     MX::RPC::SchedulerOptions sched_opts{
         30,   // frame_limit: Max frames before DFP swap
         0,    // time_limit (ms): No time-based swap limit
-        false,// stop_on_empty: Keep DFP active even if input is empty
         20,   // ifmap_queue_size: Input queue capacity
         20    // ofmap_queue_size: Output queue capacity per client
     };
@@ -146,6 +145,14 @@ int main(int argc, char* argv[]) {
     gui.Run();
     std::cout << "[Main] GUI exited. Shutting down..." << std::endl;
     runflag.store(false);
+
+    // Force exit after 5 seconds if cleanup hangs
+    std::thread force_exit_thread([&]() {
+        std::this_thread::sleep_for(std::chrono::seconds(5));
+        std::cerr << "[Main] Force exit timeout reached, terminating..." << std::endl;
+        std::exit(0);
+    });
+    force_exit_thread.detach();
 
     accl_pose.wait();
     accl_cartoon.wait();
