@@ -10,7 +10,7 @@ The **ResNet50 Classification** example demonstrates how to validate the accurac
 | **Model Type**       | Classification                                                                                           |      
 | **Framework**        | [TensorFlow](https://www.tensorflow.org/)                                                                |
 | **Model Source**     | [resnet50_v1.pb](https://zenodo.org/record/2535873/files/resnet50_v1.pb) (Downloaded Automatically)      |
-| **Pre-compiled DFP** | [Download here](https://developer.memryx.com/example_files/2p0/mlperf_accuracycalc_resnet50_v1.zip)                                                                  |  
+| **Pre-compiled DFP** | [Download here](https://developer.memryx.com/example_files/2p2/mlperf_accuracycalc_resnet50_v1.zip)                                                                  |  
 | **Input**            | 224x224x3                                                                                                |  
 | **Output**           | class probabilities(Softmax) and class with highest confidence(Argmax)                                   |
 | **License**          | [MIT](LICENSE.md)                                                                                        |
