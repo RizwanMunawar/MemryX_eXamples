@@ -1,6 +1,6 @@
 # Intrusion Detection
 
-The **intrusion detection** example demonstrates real-time detection of intruding objects for any desired Region of Interest in a video feed. This can be very useful in video surveillance. ByteTrack has been used for tracking and Yolov8m has been used of the detection of objects
+The **intrusion detection** example demonstrates real-time detection of intruding objects for any desired Region of Interest in a video feed. This can be very useful in video surveillance. ByteTrack has been used for tracking and Yolov8m has been used of the detection of objects.
 
 <p align="center">
   <img src="assets/intrusion.gif" alt="Intrusion detection example" width="35%" />
@@ -17,7 +17,7 @@ The **intrusion detection** example demonstrates real-time detection of intrudin
 | **Model Type**       | Object Detection, Tracking
 | **Framework**        | [Tflite](https://www.tensorflow.org/)
 | **Model Source**     | [Download from ultralytics](https://docs.ultralytics.com/models/yolov8/)
-| **Pre-compiled DFP** | [Download here](https://developer.memryx.com/example_files/2p0/yolov8m_intrusion_detection.zip)
+| **Pre-compiled DFP** | [Download here](https://developer.memryx.com/example_files/2p2/yolov8m_intrusion_detection.zip)
 | **Input**            | 640x640x3
 | **Output**           | Bounding boxes, confidence scores, Tracking Ids.
 | **OS**               | Linux
@@ -37,7 +37,7 @@ pip3 install -r requirements.txt
 
 To download and unzip the precompiled DFPs, use the following commands:
 ```bash
-wget https://developer.memryx.com/example_files/2p0/yolov8m_intrusion_detection.zip
+wget https://developer.memryx.com/example_files/2p2/yolov8m_intrusion_detection.zip
 mkdir -p models
 unzip yolov8m_intrusion_detection.zip -d models
 ```
