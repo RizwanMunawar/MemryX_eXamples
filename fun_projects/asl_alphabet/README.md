@@ -14,7 +14,7 @@ This application uses Mediapipe Palm and Hand models ('full' variants) to detect
 | **Model Type**       | Palm Detection & Hand Landmark Models
 | **Framework**        | TFLite
 | **Model Source**     | [Palm Detection (Full)](https://storage.googleapis.com/mediapipe-assets/palm_detection_full.tflite)🔗⬇️ ,  [Hand Landmark (Full)](https://storage.googleapis.com/mediapipe-assets/hand_landmark_full.tflite)🔗⬇️ from the [google-edge-ai/mediapipe repository](https://github.com/google-ai-edge/mediapipe/blob/master/docs/solutions/models.md#hands)🔗
-| **Pre-compiled DFP** | [Download here](https://developer.memryx.com/example_files/2p0/mediapipe_hands.zip)
+| **Pre-compiled DFP** | [Download here](https://developer.memryx.com/example_files/2p2/mediapipe_hands.zip)
 | **Input**            | Input size for Palm Detection model: (192,192,3), Input size for Hand Landmark model: (224,224,3)
 | **Output**           | Output from HandLandmark model: bounding boxes, landmarks, rotated landmarks, handedness, confidence 
 | **License**          | [MIT License](LICENSE.md)
@@ -43,7 +43,7 @@ To download and unzip the precompiled DFPs, use the following commands:
 
 ```bash
 mkdir models && cd models
-wget https://developer.memryx.com/example_files/2p0/mediapipe_hands.zip
+wget https://developer.memryx.com/example_files/2p2/mediapipe_hands.zip
 unzip mediapipe_hands.zip
 ```
 
