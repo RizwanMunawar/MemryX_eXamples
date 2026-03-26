@@ -23,7 +23,7 @@ import cv2
 from queue import Queue, Full
 from threading import Thread
 from matplotlib import pyplot as plt
-from memryx import MultiStreamAsyncAccl
+from memryx.mxapi import MxAccl
 from yolov26 import YoloV26 as YoloModel
 
 
@@ -100,16 +100,19 @@ class Yolo26Mxa:
         The function that starts the inference on the MXA.
         """
         print("dfp path = ", self.dfp_path)
-        accl = MultiStreamAsyncAccl(dfp=self.dfp_path)
+        accl = MxAccl(self.dfp_path, [0], [False,True], True)
+        accl.connect_post_model(self.postmodel_path)
         print("YOLOv26 inference on MX3 started")
-        accl.set_postprocessing_model(self.postmodel_path, model_idx=0)
 
         self.display_thread.start()
 
         start_time = time.time()
 
         # Connect the input and output functions and let the accl run
-        accl.connect_streams(self.capture_and_preprocess, self.postprocess, self.num_streams)
+        for i in range(self.num_streams):
+            accl.connect_stream(self.capture_and_preprocess, self.postprocess, stream_id=i)
+
+        accl.start()
         accl.wait()
 
         self.done = True
@@ -121,29 +124,32 @@ class Yolo26Mxa:
     # Input and Output functions ##################################################
     ###############################################################################
     # Capture frames for streams and pre process
-    def capture_and_preprocess(self, stream_idx):
+    def capture_and_preprocess(self, stream_id):
         """
         Captures a frame for the video device and pre-processes it.
         """
-        # if self.srcs_are_cams[stream_idx]:
+        # if self.srcs_are_cams[stream_id]:
         while True:
-            got_frame, frame = self.streams[stream_idx].read()
+            got_frame, frame = self.streams[stream_id].read()
 
             if not got_frame or self.done:
-                self.streams_idx[stream_idx] = False
+                self.streams_idx[stream_id] = False
                 return None
 
-            if self.srcs_are_cams[stream_idx] and self.cap_queue[stream_idx].full():
+            if self.srcs_are_cams[stream_id] and self.cap_queue[stream_id].full():
                 # drop frame
                 continue
             else:
                 try:
                     # Put the frame in the cap_queue to be processed later
-                    self.cap_queue[stream_idx].put(frame, timeout=2)
+                    self.cap_queue[stream_id].put(frame, timeout=2)
+
+                    # OpenCV is BGR, need to convert to RGB before feeding into the model
+                    frame_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
 
                     # Pre-process the frame using the corresponding model
-                    frame = self.model[stream_idx].preprocess(frame)
-                    return frame
+                    frame_rgb = self.model[stream_id].preprocess(frame_rgb)
+                    return frame_rgb
 
                 except Full:
                     print('Dropped frame')
@@ -151,26 +157,26 @@ class Yolo26Mxa:
 
     ###############################################################################
     # Post process the output from MXA
-    def postprocess(self, stream_idx, *mxa_output):
+    def postprocess(self, mxa_output, stream_id):
         """
         Post-process the MXA output.
         """
-        dets = self.model[stream_idx].postprocess(mxa_output)
+        dets = self.model[stream_id].postprocess(mxa_output)
 
         # Push the detection results to the queue
-        self.dets_queue[stream_idx].put(dets)
+        self.dets_queue[stream_id].put(dets)
 
         # Calculate the FPS
-        self.dt_array[stream_idx][self.dt_index[stream_idx]] = time.time() - self.frame_end_time[stream_idx]
-        self.dt_index[stream_idx] += 1
+        self.dt_array[stream_id][self.dt_index[stream_id]] = time.time() - self.frame_end_time[stream_id]
+        self.dt_index[stream_id] += 1
 
-        if self.dt_index[stream_idx] % 15 == 0:
-            self.fps[stream_idx] = 1 / np.average(self.dt_array[stream_idx])
+        if self.dt_index[stream_id] % 15 == 0:
+            self.fps[stream_id] = 1 / np.average(self.dt_array[stream_id])
 
-        if self.dt_index[stream_idx] >= 30:
-            self.dt_index[stream_idx] = 0
+        if self.dt_index[stream_id] >= 30:
+            self.dt_index[stream_id] = 0
 
-        self.frame_end_time[stream_idx] = time.time()
+        self.frame_end_time[stream_id] = time.time()
 
     ###############################################################################
     # Display the output and show if opted in
