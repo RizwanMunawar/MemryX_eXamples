@@ -1,6 +1,6 @@
 # Multi-Stream Object Detection Using Yolo26
 
-The **Object Detection** example demonstrates real-time object detection using the pre-trained yolo2n model on MemryX accelerators. This guide provides setup instructions, model details, and necessary code snippets to help you quickly get started.
+The **Object Detection** example demonstrates real-time object detection using the pre-trained yolo26n model on MemryX accelerators. This guide provides setup instructions, model details, and necessary code snippets to help you quickly get started.
 
 <p align="center">
   <img src="assets/yolo26n_objectDetection_multistream.png" alt="MultiStream Object Detection Example" width="45%" />
@@ -252,9 +252,3 @@ This project uses third-party software, models, and libraries. Below are the det
 - **Model**:  [Yolo26n from Ultralytics GitHub](https://docs.ultralytics.com/models/yolo26/) 🔗 
   - License: [AGPLv3](https://github.com/ultralytics/ultralytics/blob/main/LICENSE)🔗
 
-- **Code and Pre/Post-Processing**: Some code components, including pre/post-processing, were sourced from their [GitHub](https://github.com/ultralytics/ultralytics)
-  - License: [AGPLv3](https://github.com/ultralytics/ultralytics/blob/main/LICENSE) 🔗
-
-## Summary
-
-This guide offers a quick and easy way to run multi stream object detection using the Yolo26n model on MemryX accelerators. You can use either the Python or C++ implementation to perform real-time inference. Download the full code and the pre-compiled DFP file to get started immediately.

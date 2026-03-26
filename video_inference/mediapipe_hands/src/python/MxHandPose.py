@@ -56,11 +56,15 @@ class MxHandPose:
 
         # Initialize the accelerator with the model
         sched_opts = SchedulerOptions(
-                            20,    # 20 frames before swapping
-                            0,     # do NOT use idle timeouts due to the nature of inter-dependent models!
-                            False, # don't use the immediate-timeout feature
-                            16,    # input queue < frames
-                            21     # output queue > frames
+                            frame_limit=20,
+                            time_limit=0,
+                            ifmap_queue_size=16,
+                            ofmap_queue_size=21,
+                            auto_upclocking_enabled=False,
+                            upclock_power_limit_mw=11500,
+                            upclock_check_fps_saturation=False,
+                            upclock_sample_interval_ms=50,
+                            upclock_num_samples=6
                         )
 
         self.accl = AsyncAccl(dfp_path, scheduler_options=sched_opts)
