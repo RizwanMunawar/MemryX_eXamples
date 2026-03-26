@@ -7,8 +7,7 @@ from collections import namedtuple
 import cv2 as cv
 import numpy as np
 
-from memryx import AsyncAccl
-from memryx.runtime import SchedulerOptions, ClientOptions
+from memryx import AsyncAccl, SchedulerOptions, ClientOptions
 from FaceDetector import FaceDetector
 import signal
 import sys

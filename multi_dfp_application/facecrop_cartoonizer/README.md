@@ -16,7 +16,7 @@ While [Cartoonizer](../../fun_projects/cartoonizer/README.md) and [Face detectio
 | **Model Type**       | Cartoonizer and Face Detection                                                        |
 | **Framework**        | [onnx](https://onnx.ai/),[ tflite](https://www.tensorflow.org/)                                        |
 | **Model Source**    | [FacialCartoonization](https://github.com/SystemErrorWang/FacialCartoonization) and [Face Detection](https://github.com/patlevin/face-detection-tflite) |
-| **Pre-compiled DFP** | [Download here]((https://developer.memryx.com/example_files/2p0/nightmare_vision.zip))        |
+| **Pre-compiled DFP** | [Download here]((https://developer.memryx.com/example_files/2p2/nightmare_vision.zip))        |
 | **Face Detector Model Resolution** | 128x128                                                       |
 | **Cartoonizer Model Resolution** | 512x512                         
 | **Output**           | cartoonized faces and corresponding bounding boxes|
@@ -42,7 +42,7 @@ mkdir -p models
 cd models
 
 # Download and extract the two pre-compiled DFP files
-wget https://developer.memryx.com/example_files/2p0/nightmare_vision.zip
+wget https://developer.memryx.com/example_files/2p2/nightmare_vision.zip
 unzip -j nightmare_vision.zip
 
 cd ..
