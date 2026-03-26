@@ -90,25 +90,24 @@ Leverage MemryX accelerators for **real-time video processing** tasks. These app
     </td>
     <!-- new cell -->
     <td align="center" valign="top" width="25%">
+      <a href="video_inference/object_detection_yolo11_mxprepost/README.md"><b>YOLO11</b></a>
+      <a href="https://developer.memryx.com/tutorials/realtime_inf/mxprepost.html">📝</a><br/>
+      <a href="video_inference/object_detection_yolo11_mxprepost/README.md">
+        <img src="video_inference/object_detection_yolo11_mxprepost/assets/objectDetection_yolo11s.png" style="height:165px; object-fit:cover;" />
+      </a><br/>
+      <sub>COCO object detection with MxPrepost library</sub><br/>
+      <sub>Model: YOLO11 (small)</sub><br/>
+      <img alt="Python" src="https://img.shields.io/badge/Python-green" />
+      <img alt="Linux"   src="https://upload.wikimedia.org/wikipedia/commons/3/35/Tux.svg"  width="20" height="20" />
+    </td>
+    <!-- new cell -->
+    <td align="center" valign="top" width="25%">
       <a href="video_inference/object_detection_yolox/README.md"><b>YoloX</b></a><br/>
       <a href="video_inference/object_detection_yolox/README.md">
         <img src="video_inference/object_detection_yolox/assets/yolox.gif" style="height:165px; object-fit:cover;" />
       </a><br/>
       <sub>COCO object detection</sub><br/>
       <sub>Model: YoloX (Medium)</sub><br/>
-      <img alt="Python" src="https://img.shields.io/badge/Python-green" />
-      <img alt="Linux"   src="https://upload.wikimedia.org/wikipedia/commons/3/35/Tux.svg"  width="20" height="20" />
-    </td>
-    <!-- new cell -->
-    <td align="center" valign="top" width="25%">
-      <a href="video_inference/object_detection_yolo11_mxprepost/README.md"><b>YOLO11</b></a>
-      <a href="https://developer.memryx.com/tutorials/realtime_inf/mxprepost.html">📝</a><br/>
-      <a href="video_inference/object_detection_yolo11_mxprepost/README.md">
-        <img src="video_inference/object_detection_yolo11_mxprepost/assets/objectDetection_yolo11s.png" style="height:165px; object-fit:cover;" />
-      </a><br/>
-      <sub>COCO object detection</sub><br/>
-      <sub>with MxPrepost library</sub><br/>
-      <sub>Model: YOLO11 (small)</sub><br/>
       <img alt="Python" src="https://img.shields.io/badge/Python-green" />
       <img alt="Linux"   src="https://upload.wikimedia.org/wikipedia/commons/3/35/Tux.svg"  width="20" height="20" />
     </td>
@@ -342,18 +341,6 @@ Leverage MemryX accelerators for **real-time video processing** tasks. These app
       <sub>Pose Estimate with tracking</sub><br/>
       <sub>Models: Yolox &amp; Rtmpose</sub><br/>
       <img alt="Python" src="https://img.shields.io/badge/Python-green" />
-      <img alt="Linux"  src="https://upload.wikimedia.org/wikipedia/commons/3/35/Tux.svg"  width="20" height="20" />
-    </td>
-    <!-- new cell -->
-    <td align="center" valign="top" width="25%">
-      <a href="video_inference/centernet/README.md"><b>CenterNet</b></a>
-      <a href="https://developer.memryx.com/tutorials/realtime_inf/autocrop_inf/autocrop_centernet.html">📝</a><br/>
-      <a href="video_inference/centernet/README.md">
-        <img src="video_inference/centernet/assets/centernet.gif" style="height:165px; object-fit:cover;" />
-      </a><br/>
-      <sub>COCO object detection</sub><br/>
-      <sub>Model: CenterNet</sub><br/>
-      <img alt="C++"   src="https://img.shields.io/badge/C++-blue" />
       <img alt="Linux"  src="https://upload.wikimedia.org/wikipedia/commons/3/35/Tux.svg"  width="20" height="20" />
     </td>
     <!-- new cell -->
