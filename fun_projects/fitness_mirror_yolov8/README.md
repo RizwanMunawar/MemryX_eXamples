@@ -18,7 +18,7 @@ Unlike standard pose estimation, this application compares the user's live movem
 | **Model Type** | Pose Estimation |
 | **Framework** | [ONNX](https://onnx.ai/) |
 | **Model Source** | [Download from Ultralytics GitHub or docs](https://docs.ultralytics.com/models/yolov8/)  |
-| **Pre-compiled DFP** |[Download here](https://developer.memryx.com/model_explorer/2p0/YOLO_v8_medium_pose_640_640_3_onnx.zip) |
+| **Pre-compiled DFP** |[Download here](https://developer.memryx.com/model_explorer/2p2/YOLO_v8_medium_pose_640_640_3_onnx.zip) |
 | **Output** | 17-keypoint human skeleton + similarity score |
 | **OS** | Linux |
 | **License** | [AGPL-3.0](#license) |
@@ -50,7 +50,7 @@ cd fun_projects/fitness_mirror
 
 To download and unzip the precompiled DFPs, use the following commands:
 ```bash
-wget https://developer.memryx.com/model_explorer/2p0/YOLO_v8_medium_pose_640_640_3_onnx.zip
+wget https://developer.memryx.com/model_explorer/2p2/YOLO_v8_medium_pose_640_640_3_onnx.zip
 mkdir -p models
 unzip YOLO_v8_medium_pose_640_640_3_onnx.zip -d models
 ```
@@ -74,14 +74,15 @@ model.export(format="onnx")
 You can now use the MemryX Neural Compiler to compile the model and generate the DFP file required by the accelerator:
 
 ```bash
-mx_nc -v -m yolov8m-pose.onnx --autocrop -c 4 --dfp_fname YOLO_v8_medium_pose_640_640_3_onnx
+mv yolov8m-pose.onnx YOLO_v8_medium_pose_640_640_3_onnx
+mx_nc -v -m YOLO_v8_medium_pose_640_640_3_onnx.onnx --autocrop -c 4
 ```
 
 Output:
 The MemryX compiler will generate two files:
 
-* `yolov8m-pose.dfp`: The DFP file for the main section of the model.
-* `yolov8m-pose_post.onnx`: The ONNX file for the cropped post-processing section of the model.
+* `YOLO_v8_medium_pose_640_640_3_onnx.dfp`: The DFP file for the main section of the model.
+* `YOLO_v8_medium_pose_640_640_3_onnx_post.onnx`: The ONNX file for the cropped post-processing section of the model.
 
 Additional Notes:
 * `-v`: Enables verbose output, useful for tracking the compilation process.
