@@ -18,7 +18,7 @@ The **Multistreamed Intrusion Detection System** demonstrates **multistreamed re
 | **Models**           | [YoloV8n-Face](https://github.com/derronqi/yolov8-face) + [FaceNet](https://arxiv.org/pdf/1503.03832) (Face Detection and Recognition)
 | **Model Type**       | Face Detection + Face Recognition
 | **Framework**        | [Onnx](https://onnx.ai/)
-| **Pre-compiled DFP** | [Download here](https://developer.memryx.com/example_files/2p0/face_recognition.zip) (Face Recognition)
+| **Pre-compiled DFP** | [Download here](https://developer.memryx.com/example_files/2p2/face_recognition.zip) (Face Recognition)
 | **Input**            | Video stream (camera or file)
 | **Output**           | Face bounding boxes, authorization status, intrusion alerts
 | **OS**               | Linux
@@ -40,7 +40,7 @@ This system requires models for face detection and recognition. Download and ext
 
 **Face Recognition Models (YOLOv8n-face + FaceNet):**
 ```bash
-wget https://developer.memryx.com/example_files/2p0/face_recognition.zip
+wget https://developer.memryx.com/example_files/2p2/face_recognition.zip
 mkdir -p models
 unzip face_recognition.zip -d models
 ```
