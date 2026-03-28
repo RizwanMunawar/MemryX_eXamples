@@ -56,8 +56,9 @@ numpy           v1.26.4
 ========
 
 """
-import pygame
 import os
+os.environ["PYGAME_HIDE_SUPPORT_PROMPT"] = "1"
+import pygame
 from pygame.locals import *
 import threading, json, cv2, sys, pickle
 import numpy as np
