@@ -14,7 +14,8 @@ from ultralytics.data.utils import check_det_dataset
 from ultralytics.models.yolo.detect.val import DetectionValidator
 from ultralytics.utils import LOGGER, TQDM
 
-weights_dir = os.getcwd() / Path("weights")
+WEIGHTS_DIR = os.getcwd() / Path("weights")
+BATCH_SIZE = 8
 
 
 class MxaDetectionValidator(DetectionValidator):
@@ -35,8 +36,8 @@ class MxaDetectionValidator(DetectionValidator):
         LOGGER.info(f"\033[32mRunning {model_name} inference on MXA\033[0m")
 
         # Ensure your paths/naming scheme matches
-        self.mxa = mx.SyncAccl(weights_dir / f"{model_name}.dfp")
-        self.ort = ort.InferenceSession(weights_dir / f"{model_name}_post.onnx")
+        self.mxa = mx.SyncAccl(WEIGHTS_DIR / f"{model_name}.dfp")
+        self.ort = ort.InferenceSession(WEIGHTS_DIR / f"{model_name}_post.onnx")
 
     def __call__(self, model):
         model.eval()
@@ -53,7 +54,7 @@ class MxaDetectionValidator(DetectionValidator):
         progress_bar = TQDM(
             self.dataloader, desc=self.get_desc(), total=len(self.dataloader)
         )
-   
+
         for batch in progress_bar:
             batch = self.preprocess(batch)
             preds = self.mxa_detect(batch["img"])
@@ -89,20 +90,21 @@ class MxaDetectionValidator(DetectionValidator):
         """
         # Pass images through accelerator
         batch = batch.detach().cpu().numpy()  # (8, 3, 640, 640)
-        batch = [img[np.newaxis, ...] for img in batch] # (8, 1, 3, 640, 640)
+        batch = [img[np.newaxis, ...] for img in batch]  # (8, 1, 3, 640, 640)
         accl_out = self.mxa.run(batch)  # (8, 6, Fi, Fi, Fj)
 
         # Process accl out for onnxruntime
         if isinstance(accl_out[0], np.ndarray):
             accl_out = [accl_out]
 
-        onnx_inps = []  
-        batch_size, num_inputs = len(accl_out), len(accl_out[0])  
+        onnx_inps = []
+        batch_size, num_inputs = len(accl_out), len(accl_out[0])
 
         for inp_idx in range(num_inputs):
             inp = [
-                accl_out[batch_idx][inp_idx].squeeze(axis=0) for batch_idx in range(batch_size)
-            ]  
+                accl_out[batch_idx][inp_idx].squeeze(axis=0)
+                for batch_idx in range(batch_size)
+            ]
             onnx_inps.append(inp)
 
         onnx_inp_names = [inp.name for inp in self.ort.get_inputs()]
@@ -119,8 +121,8 @@ class MxaDetectionValidator(DetectionValidator):
 def dfp_exists(model):
     """Checks that the DFP and post-processing ONNX model exists"""
     model_name = Path(model.ckpt_path).stem
-    dfp = (weights_dir / f"{model_name}.dfp").exists()
-    post_onnx = (weights_dir / f"{model_name}_post.onnx").exists()
+    dfp = (WEIGHTS_DIR / f"{model_name}.dfp").exists()
+    post_onnx = (WEIGHTS_DIR / f"{model_name}_post.onnx").exists()
     return dfp and post_onnx
 
 
@@ -128,32 +130,31 @@ def compile_model(model):
     """Exports model to ONNX and compiles it to DFP."""
     model_name = Path(model.ckpt_path).stem
     # Export to onnx
-    model.export(format="onnx", simplify=True, batch=8)
-    onnx_model = onnx.load(weights_dir / f"{model_name}.onnx")
+    model.export(format="onnx", simplify=True, batch=BATCH_SIZE)
+    onnx_model = onnx.load(WEIGHTS_DIR / f"{model_name}.onnx")
     # Compile and save the DFP file
     nc = mx.NeuralCompiler(
         models=onnx_model,
         autocrop=True,
         no_sim_dfp=True,
-        dfp_fname=weights_dir / f"{model_name}.dfp",
+        dfp_fname=WEIGHTS_DIR / f"{model_name}.dfp",
         verbose=1,
     )
     nc.run()
     # Rename the exported ONNX files
     os.rename(
-        weights_dir / "main_graph_crop.onnx",
-        weights_dir / f"{model_name}_crop.onnx",
+        WEIGHTS_DIR / "main_graph_crop.onnx",
+        WEIGHTS_DIR / f"{model_name}_crop.onnx",
     )
     os.rename(
-        weights_dir / "main_graph_post.onnx",
-        weights_dir / f"{model_name}_post.onnx",
+        WEIGHTS_DIR / "main_graph_post.onnx",
+        WEIGHTS_DIR / f"{model_name}_post.onnx",
     )
     # Print file paths
-    LOGGER.info(f'Files saved: {glob(f"{weights_dir.stem}/{model_name}*")}')
+    LOGGER.info(f"Files saved: {glob(f'{WEIGHTS_DIR.stem}/{model_name}*')}")
 
 
 if __name__ == "__main__":
-
     parser = argparse.ArgumentParser(description="Run YOLOv8 validation with MXA")
     parser.add_argument(
         "-s",
@@ -175,7 +176,7 @@ if __name__ == "__main__":
     args = parser.parse_args()
     size = args.size
     device = args.device
-    model_path = weights_dir / f"yolov8{size}.pt"
+    model_path = WEIGHTS_DIR / f"yolov8{size}.pt"
 
     # Downloads model if not already available
     model = YOLO(model_path)
@@ -190,4 +191,6 @@ if __name__ == "__main__":
     if device == "mxa":
         if not dfp_exists(model):
             compile_model(model)
-        model.val(validator=MxaDetectionValidator, batch=8, rect=False)
+        model.val(
+            validator=MxaDetectionValidator, batch=BATCH_SIZE, rect=False, workers=0
+        )

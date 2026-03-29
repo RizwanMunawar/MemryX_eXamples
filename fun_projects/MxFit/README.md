@@ -38,7 +38,7 @@ pip install -r freeze
 
 To download and unzip the precompiled DFPs, use the following commands:
 ```bash
-wget https://developer.memryx.com/model_explorer/2p0/YOLO_v8_medium_pose_640_640_3_onnx.zip
+wget https://developer.memryx.com/model_explorer/2p2/YOLO_v8_medium_pose_640_640_3_onnx.zip
 mkdir -p models
 unzip YOLO_v8_medium_pose_640_640_3_onnx.zip -d models
 ```

@@ -345,7 +345,7 @@ class CLIP(nn.Module):
     
     def encode_image_mxa(self,image):
         # use mxa to run the image encode process
-        mxa_outputs = self.accl.run(image).squeeze(0)
+        mxa_outputs = self.accl.run(image)
         return torch.tensor(mxa_outputs)
 
     def encode_text(self, text):

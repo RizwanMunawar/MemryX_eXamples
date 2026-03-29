@@ -32,8 +32,8 @@ if not path.exists("models"):
 
 # Parse command-line arguments for model path (-m) and DFP file (-d)
 parser = argparse.ArgumentParser(description="Run MX3 real-time inference with options for model path and DFP file.")
-parser.add_argument('-m', '--model', type=str, default="models/midas_v2_small.tflite", help="Specify the path to the model. Default is 'models/midas_v2_small.tflite'.")
-parser.add_argument('-d', '--dfp', type=str, default="models/midas_v2_small.dfp", help="Specify the path to the compiled DFP file. Default is 'models/midas_v2_small.dfp'.")
+parser.add_argument('-m', '--model', type=str, default="models/MiDaS_256_256_3_tflite.tflite", help="Specify the path to the model. Default is 'models/MiDaS_256_256_3_tflite.tflite'.")
+parser.add_argument('-d', '--dfp', type=str, default="models/MiDaS_256_256_3_tflite.dfp", help="Specify the path to the compiled DFP file. Default is 'models/MiDaS_256_256_3_tflite.dfp'.")
 args = parser.parse_args()
 
 # Set model and DFP paths based on arguments
@@ -53,15 +53,15 @@ else:
     print("\033[93mDownloading the model for the first time.\033[0m")
     
     # Download the tar.gz file
-    system(f"curl -L -o ../../models/midas_v2_small.tar.gz https://www.kaggle.com/api/v1/models/intel/midas/tfLite/v2-1-small-lite/1/download")
+    system(f"curl -L -o models/MiDaS_256_256_3_tflite.tar.gz https://www.kaggle.com/api/v1/models/intel/midas/tfLite/v2-1-small-lite/1/download")
     
     # Extract the downloaded tar.gz file
-    system(f"tar -xzf ../../models/midas_v2_small.tar.gz -C ../../models/")
+    system(f"tar -xzf models/MiDaS_256_256_3_tflite.tar.gz -C models/")
     
     # Rename the extracted file (1.tflite) to model_path
-    if path.isfile('../../models/1.tflite'):
-        system("mkdir -p ../../models")
-        system(f"mv ../../models/1.tflite {model_path}")
+    if path.isfile('models/1.tflite'):
+        system("mkdir -p models")
+        system(f"mv models/1.tflite {model_path}")
         print("\033[93mModel extraction completed and renamed to {}.\033[0m".format(model_path))
     else:
         print("\033[91mError: Extracted file '1.tflite' not found.\033[0m")
@@ -86,7 +86,7 @@ if dfp_path and path.isfile(dfp_path):
     dfp = dfp_path
 else:
     print("\033[93mCompiling the model for the first time. This step will be skipped if the compiled DFP exists.\033[0m")
-    nc = NeuralCompiler(num_chips=4, models=model_path, verbose=1, dfp_fname="../../models/midas_v2_small")
+    nc = NeuralCompiler(num_chips=4, models=model_path, verbose=1, dfp_fname="models/midas_v2_small")
     dfp = nc.run()
 
 ###############################################################################

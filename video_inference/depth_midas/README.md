@@ -14,7 +14,7 @@ The **Depth Estimation** example demonstrates real-time depth inference using th
 | **Model Type**       | Depth Estimation                                                        |
 | **Framework**        | [TensorFlow](https://www.tensorflow.org/) 🔗
 | **Model Source**     | [Download from TensorFlow Hub](https://www.kaggle.com/models/intel/midas) 🔗
-| **Pre-compiled DFP** | [Download here](https://developer.memryx.com/example_files/2p0/depth_estimation_using_midas.zip)
+| **Pre-compiled DFP** | [Download here](https://developer.memryx.com/example_files/2p2/depth_estimation_using_midas.zip)
 | **Input**            | 256x256 (default)
 | **Output**           | Depth map (matches input resolution)
 | **OS**               | Linux, Windows
@@ -35,9 +35,9 @@ sudo apt install curl
 
 To download and unzip the precompiled DFPs, use the following commands:
 ```bash
-wget https://developer.memryx.com/example_files/2p0/depth_estimation_using_midas.zip
+wget https://developer.memryx.com/model_explorer/2p2/MiDaS_256_256_3_tflite.zip
 mkdir -p models
-unzip depth_estimation_using_midas.zip -d models
+unzip MiDaS_256_256_3_tflite -d models
 ```
 
 <details> 
@@ -48,13 +48,13 @@ If you prefer, you can download and compile the model rather than using the prec
 curl -L -o ./midas_v2_small.tar.gz https://www.kaggle.com/api/v1/models/intel/midas/tfLite/v2-1-small-lite/1/download
 tar -xzf ./midas_v2_small.tar.gz -C ./
 mkdir -p models
-mv 1.tflite ./models/midas_v2_small.tflite
+mv 1.tflite models/MiDaS_256_256_3_tflite.tflite
 ```
 
 You can now use the MemryX Neural Compiler to compile the model and generate the DFP file required by the accelerator:
 
 ```bash
-mx_nc -m models/midas_v2_small.tflite
+mx_nc -m models/MiDaS_256_256_3_tflite.tflite
 ```
 
 </details>
@@ -73,8 +73,8 @@ python src/python/run_depth_estimate.py
 ```
 You can specify the model path and DFP (Compiled Model) path with the following options:
 
-* `-m` or `--model`: Path to the model file (default is models/midas_2_small.tflite)
-* `-d` or `--dfp`: Path to the compiled DFP file (default is models/midas_v2_small.dfp)
+* `-m` or `--model`: Path to the model file (default is models/MiDaS_256_256_3_tflite.tflite)
+* `-d` or `--dfp`: Path to the compiled DFP file (default is models/MiDaS_256_256_3_tflite.dfp)
 
 For example, to run with a specific model and DFP file, use:
 
@@ -123,7 +123,7 @@ make
 ## Running the Application (Windows)
 
 ### Running from compiled executable
-[Download](https://developer.memryx.com/example_files/2p0/depth_estimation_windows.zip) the compiled C++ executable version, and extract the zip.
+[Download](https://developer.memryx.com/example_files/2p2/depth_estimation_windows.zip) the compiled C++ executable version, and extract the zip.
 
 Then just double-click `depthestimation.exe` to launch using the first available webcam.
 

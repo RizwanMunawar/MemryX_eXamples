@@ -14,7 +14,7 @@ The **Cartoonizer** example demonstrates real-time "cartoonization" of a video s
 | **Model Type**       | Cartoonizer                                               |
 | **Framework**        | [ONNX](https://onnx.ai/)                                   |
 | **Model Source**     | [Download here](https://github.com/SystemErrorWang/FacialCartoonization/blob/master/weight.pth)       |
-| **Pre-compiled DFP** | [Download here](https://developer.memryx.com/model_explorer/2p0/Facial_cartoonizer_512_512_3_onnx.zip)         |
+| **Pre-compiled DFP** | [Download here](https://developer.memryx.com/model_explorer/2p2/Facial_cartoonizer_512_512_3_onnx.zip)         |
 | **Model Resolution** | 512x512                                                      |
 | **Output**           | cartoonized version of the input image |
 | **OS**               | Linux, Windows |
@@ -49,7 +49,7 @@ Then open the `src/python_windows/` folder and double-click on `setup_env.bat`. 
 
 To download and unzip the precompiled DFPs, use the following commands:
 ```bash
-wget https://developer.memryx.com/model_explorer/2p0/Facial_cartoonizer_512_512_3_onnx.zip
+wget https://developer.memryx.com/model_explorer/2p2/Facial_cartoonizer_512_512_3_onnx.zip
 mkdir -p models
 unzip Facial_cartoonizer_512_512_3_onnx.zip -d models
 ```

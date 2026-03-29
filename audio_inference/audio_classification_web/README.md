@@ -14,7 +14,7 @@ The **Audio classification web application (YAMNet model)** example demonstrates
 | **Model Type**       | Classification
 | **Framework**        | [Tflite](https://www.tensorflow.org/)
 | **Model Source**     | [Download from Kaggle](https://www.kaggle.com/models/google/yamnet/tfLite)
-| **Pre-compiled DFP** | [Download here](https://developer.memryx.com/model_explorer/2p0/Audio_classification_YamNet_96_64_1_tflite.zip)
+| **Pre-compiled DFP** | [Download here](https://developer.memryx.com/model_explorer/2p2/Audio_classification_YamNet_96_64_1_tflite.zip)
 | **Input**            | Audio clips (.wav files)
 | **Output**           | What the audio clip is mostly about
 | **OS**               | Linux
@@ -48,7 +48,7 @@ pip install ffmpeg-python
 
 To download and unzip the precompiled DFPs, use the following commands:
 ```bash
-wget https://developer.memryx.com/model_explorer/2p0/Audio_classification_YamNet_96_64_1_tflite.zip
+wget https://developer.memryx.com/model_explorer/2p2/Audio_classification_YamNet_96_64_1_tflite.zip
 mkdir -p models
 unzip Audio_classification_YamNet_96_64_1_tflite.zip -d models
 ```
@@ -79,7 +79,7 @@ mv 1.tflite Audio_classification_YamNet_96_64_1_tflite.tflite
 Now you may compile the model. Run the following command to generate the DFP. 
 
 ```bash
- mx_nc Audio_classification_YamNet_96_64_1_tflite.tflite -v --autocrop
+ mx_nc -m Audio_classification_YamNet_96_64_1_tflite.tflite -v --autocrop
 ```
 
 This completes the process of download and compilation. 

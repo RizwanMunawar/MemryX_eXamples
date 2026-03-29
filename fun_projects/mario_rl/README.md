@@ -59,8 +59,8 @@ We have provided one example agent for you to get started with. Run the commands
 
 ```bash
 cd src && mkdir runs && cd runs
-wget https://developer.memryx.com/example_files/2p0/mario_rl.zip
-unzip mario_rl.zip -d example
+wget https://developer.memryx.com/example_files/2p2/mario_rl.zip
+unzip -j mario_rl.zip -d example
 cd ..
 python play.py --ckpt runs/example/mario_net_final.ckpt --deterministic
 ```

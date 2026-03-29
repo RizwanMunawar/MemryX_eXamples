@@ -14,7 +14,7 @@ The **Audio Denoising using UNet** example demonstrates how to denoise an audio 
 | **Model Type**       | Enhancement
 | **Framework**        | [Keras](https://www.tensorflow.org/)
 | **Model Source**     | [Download from Github](https://github.com/vbelz/Speech-enhancement/tree/master?tab=readme-ov-file)
-| **Pre-compiled DFP** | [Download here](https://developer.memryx.com/model_explorer/2p0/Audio_Denoising_UNet_128_128_1_keras.zip)
+| **Pre-compiled DFP** | [Download here](https://developer.memryx.com/model_explorer/2p2/Audio_Denoising_UNet_128_128_1_keras.zip)
 | **Input**            | Audio clips (.wav files)
 | **Output**           | Denoised audio file
 | **OS**               | Linux
@@ -37,7 +37,7 @@ pip install numpy librosa==0.11.0 soundfile==0.13.1
 
 To download and unzip the precompiled DFPs, use the following commands:
 ```bash
-wget https://developer.memryx.com/model_explorer/2p0/Audio_Denoising_UNet_128_128_1_keras.zip
+wget https://developer.memryx.com/model_explorer/2p2/Audio_Denoising_UNet_128_128_1_keras.zip
 mkdir -p models
 unzip Audio_Denoising_UNet_128_128_1_keras.zip -d models
 ```
@@ -64,7 +64,7 @@ Now you may compile the model. Run the following command to generate the DFP.
 
 
 ```bash
- mx_nc Audio_Denoising_UNet_128_128_1_keras.h5 -v 
+ mx_nc -m Audio_Denoising_UNet_128_128_1_keras.h5 -v 
 ```
 
 This completes the process of download and compilation. 

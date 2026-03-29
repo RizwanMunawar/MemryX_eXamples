@@ -14,7 +14,7 @@ The **Object Tracking** example demonstrates real-time object tracking using the
 | **Model Type**       | Object Detection                                                        |
 | **Framework**        | [ONNX](https://onnx.ai/)                                                   |
 | **Model Source**     | [Download from Ultralytics GitHub or docs](https://docs.ultralytics.com/models/yolov8/) |
-| **Pre-compiled DFP** | [Download here](https://developer.memryx.com/model_explorer/2p0/YOLO_v8_small_640_640_3_onnx.zip)                                          |
+| **Pre-compiled DFP** | [Download here](https://developer.memryx.com/model_explorer/2p2/YOLO_v8_small_640_640_3_onnx.zip)                                          |
 | **Model Resolution** | 640x640                                                       |
 | **Output**           | Object bounding boxes |
 | **OS**               | Linux |
@@ -42,7 +42,7 @@ pip install supervision==0.27.0
 
 To download and unzip the precompiled DFPs, use the following commands:
 ```bash
-wget https://developer.memryx.com/model_explorer/2p0/YOLO_v8_small_640_640_3_onnx.zip
+wget https://developer.memryx.com/model_explorer/2p2/YOLO_v8_small_640_640_3_onnx.zip
 mkdir -p models
 unzip YOLO_v8_small_640_640_3_onnx.zip -d models
 ```

@@ -73,7 +73,7 @@ class PointCloudFromDepth:
         Checks if the model is downloaded or compiled and downloads or compiles 
         it if necessary.
         """
-        model_tar_path = "./midas_v2_small.tar.gz"
+        model_tar_path = "./MiDaS_256_256_3_tflite.tar.gz"
         extracted_file = "./1.tflite"
         
         # Use self.model_path and self.dfp
