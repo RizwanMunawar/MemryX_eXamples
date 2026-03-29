@@ -83,7 +83,7 @@ class ASLDemo:
 
         self.mxpose.stop()
         self.cap.release()
-        sys.exit(0)
+        os._exit(0)
 
     def and_display(self):
 
@@ -134,7 +134,7 @@ class ASLDemo:
                     break
 
         cv2.destroyAllWindows()
-        sys.exit(0)
+        os._exit(0)
 
 
 
