@@ -50,7 +50,7 @@ V1.0.0        - 20/jan/2026 - Raid - Taking the game from Beta stage to full rel
 Latest tested dependencies:
 pygame          v2.6.1
 python          v3.12.3
-mx_runtime      v2.2.0.dev13
+mx_runtime      v2.2.0
 opencv-python   v4.11.0.86
 numpy           v1.26.4
 ========
