@@ -67,7 +67,7 @@ class MediapipeHandsDemo:
 
         self.mxpose.stop()
         self.cap.release()
-        sys.exit(0)
+        os._exit(0)
 
     def and_display(self):
 
@@ -96,7 +96,7 @@ class MediapipeHandsDemo:
                     break
 
         cv2.destroyAllWindows()
-        sys.exit(0)
+        os._exit(0)
 
 
 
