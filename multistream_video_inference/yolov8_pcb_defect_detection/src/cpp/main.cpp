@@ -52,7 +52,7 @@ struct ChannelObject
     float fps_number;
     std::chrono::milliseconds start_ms;
     std::unique_ptr<YOLOv8> yolov8_handle;
-    MX::Utils::fifo_queue<cv::Mat *> disp_frames; // sync queue between in/out callback
+    MX::Utils::BlockyQueue<cv::Mat *> disp_frames; // sync queue between in/out callback
 };
 
 // Global variables
@@ -60,8 +60,8 @@ ChannelObject g_chan_objs[kMaxNumChannels];
 VmsCfg g_config;
 vector<InputSource *> g_input_sources;
 MX::Types::MxModelInfo g_model_info;
-MX::Utils::fifo_queue<std::vector<float *>> g_input_data_buf;
-MX::Utils::fifo_queue<std::vector<float *>> g_output_data_buf;
+MX::Utils::BlockyQueue<std::vector<float *>> g_input_data_buf;
+MX::Utils::BlockyQueue<std::vector<float *>> g_output_data_buf;
 std::atomic<uint64_t> g_frame_count(0);
 int g_duration_in_secs = 5;
 bool g_is_running = true;
