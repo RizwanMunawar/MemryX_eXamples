@@ -17,7 +17,7 @@ This guide provides step-by-step setup instructions, model specifications, and p
 | **Model Type**       | Object Detection                                                        |
 | **Framework**        | [ONNX](https://onnx.ai/)                                                |
 | **Model Source**     | [Ultralytics YOLOv8](https://docs.ultralytics.com/models/yolov8/) (export to ONNX) |
-| **Pre-compiled DFP** | [Download (ONNX)](https://developer.memryx.com/model_explorer/2p0/YOLO_v8_small_640_640_3_onnx_DsPCBSD.zip) |
+| **Pre-compiled DFP** | [Download (ONNX)](https://developer.memryx.com/example_files/2p2/YOLO_v8_small_640_640_3_onnx_DsPCBSD.zip) |
 | **Model Resolution** | 640x640                                                                 |
 | **Output**           | Bounding box coordinates with PCB defect class                          |
 | **OS**               | Linux                                                                   |
