@@ -187,7 +187,7 @@ class ReadmeCommandExtractor:
         
         # Block-list for things that belong in run phase or system setup
         # We use regex word boundaries so 'pip' doesn't ban 'mediapipe'
-        IGNORE_REGEX = r'\b(pip|install|sudo|apt-get|brew|dnf|yum|mx_nc|python|python3|g\+\+|cmake|make|mv objectDet_poseEst_yolov8/* ./|mv YOLOX_medium_640_640_3_onnx.dfp yolox_m.dfp|mv YOLOX_medium_640_640_3_onnx_post.onnx yolox_m_post.onnx)\b'
+        IGNORE_REGEX = r'\b(pip|install|sudo|apt-get|brew|dnf|yum|mx_nc|python|python3|g\+\+|cmake|make|mv objectDet_poseEst_yolov8/* ./)\b'
 
         def is_valid_url(cmd: str) -> bool:
             """Ensure downloads come from trusted domains."""
