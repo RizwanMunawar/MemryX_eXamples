@@ -1,7 +1,7 @@
 # MemryX Examples Launcher
 
 <picture>
-  <img src="../assets/gui_page.png">
+  <img src="../assets/gui_gif.gif">
 </picture>
 
 A clean control panel for the MemryX examples repo.
