@@ -4,7 +4,7 @@ All Rights Reserved.
 
 ============
 File Name:      runGame.py
-Project:        fun_examples
+Project:        fun_examples/handPong_game
 ============
 
 
@@ -21,11 +21,6 @@ scores and display it on the screen.
 ======
 Notes:
 
--as of the time of writing, pygame is using pkg_resources which is deprecated,
-so the program throws a warning at runtime. waiting for developers to make
-the changes on the library (migrating from pgk_resources to importlib_resources)
-and it should stop the warning from appearing, hopefully without affecting the
-program.
 ======
 
 
@@ -55,14 +50,15 @@ V1.0.0        - 20/jan/2026 - Raid - Taking the game from Beta stage to full rel
 Latest tested dependencies:
 pygame          v2.6.1
 python          v3.12.3
-mx_runtime      v2.1.0
+mx_runtime      v2.2.0
 opencv-python   v4.11.0.86
 numpy           v1.26.4
 ========
 
 """
-import pygame
 import os
+os.environ["PYGAME_HIDE_SUPPORT_PROMPT"] = "1"
+import pygame
 from pygame.locals import *
 import threading, json, cv2, sys, pickle
 import numpy as np
@@ -458,8 +454,6 @@ def main():
             ball.y_vel=0
             ball.x_vel=4
             p_score.point(2)
-
-    #print("Threads alive:", [t.name for t in threading.enumerate()])
 
     pygame.quit()
     mx_pose.stop()

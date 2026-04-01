@@ -1,32 +1,32 @@
 # Pong Game Using Mediapipe Palm Detection 🏓
 
-Classic game of pong using computer vision to detect hand movements and link it to the games player paddles. Using the mediapipe model, it can detect and diffrentiate between left hand and right hand, and assigns player 1 and player 2 to it, respectevly. The game also keeps players scores and display it on the screen.
+A classic Pong game powered by computer vision to detect hand movements and map them to the players' paddles. Using the MediaPipe models, the application detects and distinguishes between the left and right hands, assigning them to Player 1 and Player 2 respectively. The game also keeps track of each player's score and displays it on the screen.
 
 <p align="center">
-  <img src="assets/PONG_DEMO.gif" alt="Mediapipe Hand Landmarks" width="25%" />
+  <img src="assets/PONG_DEMO.gif" alt="Mediapipe Hand Landmarks" width="50%" />
 </p>
 
 ## Overview
 
-| **Property**         | **Details**                                                                                  
-|----------------------|------------------------------------------
-| **Model**            | [MediaPipe Palm detection model](https://mediapipe.readthedocs.io/en/latest/solutions/hands.html#palm-detection-model)🔗, [MediaPipe Hand Landmark model](https://mediapipe.readthedocs.io/en/latest/solutions/hands.html#hand-landmark-model)🔗
-| **Model Type**       | Palm Detection & Hand Landmark Models
-| **Framework**        | TFLite
-| **Model Source**     | [Palm Detection (Full)](https://storage.googleapis.com/mediapipe-assets/palm_detection_full.tflite)🔗⬇️ ,  [Hand Landmark (Full)](https://storage.googleapis.com/mediapipe-assets/hand_landmark_full.tflite)🔗⬇️ from the [google-edge-ai/mediapipe repository](https://github.com/google-ai-edge/mediapipe/blob/master/docs/solutions/models.md#hands)🔗
-| **Pre-compiled DFP** | [Download here](https://developer.memryx.com/example_files/2p0/mediapipe_hands.zip)
-| **Input**            | Input size for Palm Detection Model: (192,192,3), Input size for Hand Landmark model : (224,224,3)
-| **Output**           | Output from HandLandmark model: bounding boxes, landmarks, rotated landmarks, handedness, confidence 
-| **License**          | [MIT License](LICENSE.md)
+| **Property**         | **Details** |
+|----------------------|-------------|
+| **Model**            | [MediaPipe Palm Detection model](https://mediapipe.readthedocs.io/en/latest/solutions/hands.html#palm-detection-model)🔗, [MediaPipe Hand Landmark model](https://mediapipe.readthedocs.io/en/latest/solutions/hands.html#hand-landmark-model)🔗 |
+| **Model Type**       | Palm Detection and Hand Landmark models |
+| **Framework**        | TFLite |
+| **Model Source**     | [Palm Detection (Full)](https://storage.googleapis.com/mediapipe-assets/palm_detection_full.tflite)🔗⬇️, [Hand Landmark (Full)](https://storage.googleapis.com/mediapipe-assets/hand_landmark_full.tflite)🔗⬇️ from the [google-ai-edge/mediapipe repository](https://github.com/google-ai-edge/mediapipe/blob/master/docs/solutions/models.md#hands)🔗 |
+| **Pre-compiled DFP** | [Download here](https://developer.memryx.com/example_files/2p2/mediapipe_hands.zip) |
+| **Input**            | Palm Detection input size: `(192, 192, 3)`<br>Hand Landmark input size: `(224, 224, 3)` |
+| **Output**           | Hand Landmark model outputs: bounding boxes, landmarks, rotated landmarks, handedness, and confidence scores |
+| **License**          | [MIT License](LICENSE.md) |
 
 
 ## Requirements
 
 ### Linux
 
-Before running the application, ensure that **OpenCV** and all other dependencies is installed
+Before running the application, ensure that **OpenCV** and all other dependencies are installed.
 
-You can install dependencies using the following command:
+You can install the required dependencies using the following command:
 
 ```bash
 pip3 install opencv-python==4.11.0.86 pygame==2.6.1 numpy==1.26.4
@@ -47,16 +47,16 @@ pip3 install opencv-python==4.11.0.86 pygame==2.6.1 numpy==1.26.4
 
 #### Linux
 
-To download and unzip the precompiled DFPs, use the following commands:
+To download and unzip the precompiled DFP files, use the following commands:
 
 ```bash
 mkdir models && cd models
-wget https://developer.memryx.com/example_files/2p0/mediapipe_hands.zip
+wget https://developer.memryx.com/example_files/2p2/mediapipe_hands.zip
 unzip mediapipe_hands.zip
 ```
 
 <details>
-<summary> (Optional) Download and Compile the Model Yourself </summary>
+<summary> (Optional) Download and Compile the Models Yourself </summary>
 
 If you prefer, you can download and compile the model rather than using the precompiled model. Download the pre-trained 
 
@@ -73,14 +73,14 @@ You can now use the MemryX Neural Compiler to compile the model and generate the
 mx_nc -m hand_landmark_full.tflite palm_detection_full.tflite --autocrop
 ```
 
-**NOTE:** if you compile the DFP yourself, the NeuralCompiler will create a cropped post-processing model. This model is just simple data organziation operations, so our `MxHandPose.py` actually forgoes use of the `post.tflite` and uses plain numpy functions. Thus it is safe to delete the post model file.
+**Note:** If you compile the DFP yourself, the Neural Compiler will create a cropped post-processing model. This model performs only simple data reorganization operations, so `MxHandPose.py` does not use the generated `post.tflite` file and instead relies on standard NumPy functions. Therefore, it is safe to delete the post-processing model file.
 
 </details>
 
 
 <!-- #### Windows
 
-[Download](https://developer.memryx.com/example_files/2p0/mediapipe_hands.zip) and open the zip, and place the .dfp file in the `models/` folder. -->
+[Download](https://developer.memryx.com/example_files/2p2/mediapipe_hands.zip) and open the zip, and place the .dfp file in the `models/` folder. -->
 
 
 <!-- Note: The windows instructions are ommited until fully tested on windows -->
@@ -116,7 +116,7 @@ cd src/python/
 python runGame.py
 ```
  
-Press 'x' button on the window to quit the program!
+Press the **X** button on the window to quit the program.
 <!-- 
 #### Windows
 

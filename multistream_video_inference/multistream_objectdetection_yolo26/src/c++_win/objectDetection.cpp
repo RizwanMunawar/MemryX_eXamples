@@ -166,39 +166,52 @@ private:
 
     std::vector<detectedObj> get_detections(float* output, int num_boxes) {
         std::vector<detectedObj> detections;
-        
-        // YOLOv26 output format: (1, 300, 6) where each detection is [x1, y1, x2, y2, confidence, class_id]
-        // The output is flattened, so we access it as output[i * 6 + offset]
-        
+
+        // YOLOv26 output format: (1, 300, 6)
+        // [x1, y1, x2, y2, confidence, class_id]
         for (int i = 0; i < num_boxes; i++) {
-            //Decoding model output - YOLOv26 format: [x1, y1, x2, y2, confidence, class_id]
             float x1 = output[i * 6 + 0];
             float y1 = output[i * 6 + 1];
             float x2 = output[i * 6 + 2];
             float y2 = output[i * 6 + 3];
             float accuracy = output[i * 6 + 4];
             int classPrediction = static_cast<int>(output[i * 6 + 5]);
-            
-            // Skip invalid detections (x1 < 0 indicates padding/invalid detection)
-            if (x1 < 0) {
-                continue;
-            }
-            
-            // Filter by confidence threshold
+
             if (accuracy < conf_thresh) {
                 continue;
             }
 
-            // Coords should be scaled to the display image. The coords from the model are relative to the model's input height and width.
+            // Skip clearly invalid boxes
+            if (x2 <= x1 || y2 <= y1) {
+                continue;
+            }
+
+            // Scale from model input space to original image space
             x1 = (x1 / model_input_width) * input_image_width;
             x2 = (x2 / model_input_width) * input_image_width;
             y1 = (y1 / model_input_height) * input_image_height;
             y2 = (y2 / model_input_height) * input_image_height;
 
-            detectedObj obj(x1, x2, y1, y2, classPrediction, accuracy);
+            // Reject boxes completely outside the image
+            if (x2 <= 0 || y2 <= 0 || x1 >= input_image_width || y1 >= input_image_height) {
+                continue;
+            }
 
+            // Clip boxes to image boundaries
+            x1 = std::max(0.0f, std::min(x1, static_cast<float>(input_image_width - 1)));
+            y1 = std::max(0.0f, std::min(y1, static_cast<float>(input_image_height - 1)));
+            x2 = std::max(0.0f, std::min(x2, static_cast<float>(input_image_width - 1)));
+            y2 = std::max(0.0f, std::min(y2, static_cast<float>(input_image_height - 1)));
+
+            // Reject boxes that became invalid after clipping
+            if (x2 <= x1 || y2 <= y1) {
+                continue;
+            }
+
+            detectedObj obj(x1, x2, y1, y2, classPrediction, accuracy);
             detections.push_back(obj);
         }
+
         return detections;
     }
 
