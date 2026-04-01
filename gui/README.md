@@ -17,7 +17,18 @@ It brings the most common example workflows into one place, so you can:
 
 Choose the installation flow that matches your setup.
 
-### Option 1: Install from a local checkout
+### Option 1: Install from GitHub
+
+Use this option to install the launcher directly from the repository.
+
+```bash
+python3 -m venv .venv
+source .venv/bin/activate
+pip install --extra-index-url https://developer.memryx.com/pip -e "git+ssh://git@github.com/memryx/memryx_examples_internal.git@gui_app#egg=memryx-examples-launcher[memryx-sdk]"
+example_launcher
+```
+
+### Option 2: Install from a local checkout
 
 Use this option if you already have the repository cloned locally.
 
@@ -28,16 +39,7 @@ pip install --extra-index-url https://developer.memryx.com/pip -e ".[memryx-sdk]
 example_launcher
 ```
 
-### Option 2: Install from GitHub
 
-Use this option to install the launcher directly from the repository.
-
-```bash
-python3 -m venv .venv
-source .venv/bin/activate
-pip install --extra-index-url https://developer.memryx.com/pip -e "git+ssh://git@github.com/memryx/memryx_examples_internal.git@gui_app#egg=memryx-examples-launcher[memryx-sdk]"
-example_launcher
-```
 
 > [!NOTE]
 > The launcher starts a local web server and automatically opens the application in your default browser at `http://localhost:8080`.
