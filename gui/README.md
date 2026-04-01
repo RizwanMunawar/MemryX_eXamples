@@ -1,5 +1,9 @@
 # MemryX Examples Launcher
 
+<picture>
+  <img src="../assets/gui_page.png">
+</picture>
+
 A clean control panel for the MemryX examples repo.
 
 Instead of jumping across folders and README files, you launch one app and:
