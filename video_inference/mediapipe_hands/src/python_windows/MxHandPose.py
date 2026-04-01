@@ -1,5 +1,6 @@
 import numpy as np
-import os, cv2
+import cv2
+from pathlib import Path
 from queue import Queue, Empty
 from dataclasses import dataclass, field
 from mp_palmdet import MPPalmDet
@@ -51,10 +52,14 @@ class MxHandPose:
         self.palmdet_model     = MPPalmDet(topK=self.num_hands)
         self.handpose_model    = MPHandPose(confThreshold=0.5)
 
-        dfp_path               = os.path.join(mx_modeldir, 'models.dfp')
+        dfp_path               = Path(mx_modeldir) / 'models.dfp'
+        if not dfp_path.is_file():
+            raise FileNotFoundError(
+                f"Missing DFP file: {dfp_path}. Download or compile the model into the project's models/ directory."
+            )
 
         # Initialize the accelerator with the model
-        self.accl = AsyncAccl(dfp_path, group_id=0)
+        self.accl = AsyncAccl(str(dfp_path), group_id=0)
 
         # Connect input and output functions to the accelerator
         self.accl.connect_input(self._palmdetect_src, model_idx=1)
@@ -201,6 +206,4 @@ class MxHandPose:
         annotated_frame.handposes.append(HandPose(bbox, landmarks, rotated_landmarks_world, handedness, confidence))
         if len(annotated_frame.handposes) == annotated_frame.num_detections:
             self.output_q.put(annotated_frame)
-
-
 

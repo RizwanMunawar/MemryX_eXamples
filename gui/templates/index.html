@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MemryX eXamples Launcher</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <!-- Loading Overlay -->
+    <div id="loadingOverlay" class="loading-overlay hidden">
+        <div class="loading-content">
+            <div class="spinner"></div>
+            <h2>Running Example...</h2>
+            <p>Please wait</p>
+            <p class="small-text">Use the Stop buttons below to cancel</p>
+        </div>
+    </div>
+
+    <!-- Header -->
+    <header id="mainHeader">
+        <div class="header-content">
+            <div class="logo-container">
+                <a href="#" id="logoLink" class="logo-link">
+                    <img src="/repo/assets/mx_examples-nobg.png" alt="MemryX Examples" class="logo">
+                </a>
+            </div>
+            <div class="header-right">
+                <input type="text" id="searchInput" placeholder="Search..." class="search-input">
+                <button id="darkModeToggle" class="btn btn-icon" title="Toggle Dark Mode">
+                    <svg class="theme-icon sun-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="5"/>
+                        <line x1="12" y1="1" x2="12" y2="3"/>
+                        <line x1="12" y1="21" x2="12" y2="23"/>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
+                        <line x1="1" y1="12" x2="3" y2="12"/>
+                        <line x1="21" y1="12" x2="23" y2="12"/>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
+                    </svg>
+                    <svg class="theme-icon moon-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+                    </svg>
+                </button>
+                <button onclick="window.open('https://github.com/memryx/MemryX_eXamples')" class="btn btn-icon" title="GitHub Repository">
+                    <svg height="24" viewBox="0 0 16 16" width="24" fill="currentColor">
+                        <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/>
+                    </svg>
+                </button>
+                <button onclick="window.open('https://developer.memryx.com')" class="btn btn-icon btn-devhub" title="Developer Hub">
+                    <img src="/repo/assets/devhub.png" alt="DevHub" class="btn-logo">
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Category Navigation -->
+    <nav id="categoryNav" class="category-nav">
+        <div class="nav-content">
+            <button class="nav-btn active" data-category="all">All Categories</button>
+            {% for cat in categories %}
+            <button class="nav-btn" data-category="{{ cat.name }}">{{ cat.name }}</button>
+            {% endfor %}
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main id="mainContent">
+        {% for cat in categories %}
+        <section class="category-section" data-category="{{ cat.name }}" id="section-{{ cat.name|replace(' ', '-') }}">
+            <div class="container">
+                <h2 class="category-title">{{ cat.name }}</h2>
+                <div class="examples-grid" id="grid-{{ cat.name|replace(' ', '-') }}">
+                    {% for item in cat.items %}
+                    <div class="example-card">
+                        {% if item.preview_url %}
+                        <img src="{{ item.preview_url }}" alt="{{ item.title }}" class="card-image">
+                        {% endif %}
+                        <div class="card-content">
+                            <h3 class="card-title">{{ item.title }}</h3>
+                            <p class="card-description">{{ item.description }}</p>
+                            
+                            <div class="card-badges">
+                                {% for model in item.models %}
+                                <span class="badge badge-model">{{ model }}</span>
+                                {% endfor %}
+                                {% for lang in item.code_langs %}
+                                <span class="badge badge-lang">{{ lang }}</span>
+                                {% endfor %}
+                                {% for os in item.os_list %}
+                                <span class="badge badge-os">{{ os }}</span>
+                                {% endfor %}
+                            </div>
+                            
+                            <div class="card-actions">
+                                {% if item.readme_url %}
+                                <button onclick="window.open('{{ item.readme_url }}')" class="btn btn-small">README</button>
+                                {% endif %}
+                                {% if item.tutorial_url %}
+                                <button onclick="window.open('{{ item.tutorial_url }}')" class="btn btn-small">Tutorial</button>
+                                {% endif %}
+                                {% if item.has_run_sh %}
+                                <button onclick="runExample('{{ item.run_sh_path }}', '{{ item.title }}')" class="btn btn-small btn-run">Run ▶</button>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </section>
+        {% endfor %}
+    </main>
+
+    <!-- Footer -->
+    <footer id="mainFooter">
+        <div class="footer-content">
+            <div class="footer-left">
+                <span class="footer-icon">ℹ️</span>
+                <span id="statusText">No example running</span>
+            </div>
+            <div class="footer-right">
+                <button onclick="stopExample()" class="btn btn-stop">Stop</button>
+                <button onclick="killExample()" class="btn btn-kill">Force Kill</button>
+            </div>
+        </div>
+    </footer>
+
+    <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+</body>
+</html>

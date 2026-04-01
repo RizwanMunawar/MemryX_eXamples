@@ -196,7 +196,7 @@ class Demo(QMainWindow):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Real-time multi-face recognition demo')
-    parser.add_argument('--video_path', help='Video source path (e.g., /dev/video0)')
+    parser.add_argument('--video_path', help='Video source path (e.g., /dev/video0)',default='/dev/video0')
     args = parser.parse_args()
     
     app = QApplication(sys.argv)

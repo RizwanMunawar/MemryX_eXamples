@@ -1,0 +1,48 @@
+[build-system]
+requires = ["setuptools>=69", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "memryx-examples-launcher"
+version = "0.1.0"
+description = "MemryX examples GUI launcher"
+readme = "gui/README.md"
+requires-python = ">=3.10"
+dependencies = [
+    "beautifulsoup4",
+    "cython-bbox~=0.1.5",
+    "fastapi~=0.115.6",
+    "flask",
+    "lap~=0.5.12",
+    "markdown",
+    "nicegui",
+    "opencv-contrib-python~=4.11.0",
+    "opencv-python~=4.11.0",
+    "open3d",
+    "psutil",
+    "PyQt5~=5.15.11",
+    "pyautogui~=0.9.54",
+    "pygame~=2.6.1",
+    "PySide6",
+    "ultralytics",
+    "uvicorn~=0.34.0",
+    "clip @ git+https://github.com/ultralytics/CLIP.git@643beff3883b5720d94b6b9c9eca12fa9fb72fb1",
+    "supervision"
+]
+
+[project.optional-dependencies]
+memryx-sdk = [
+    "memryx",
+]
+
+[project.scripts]
+example_launcher = "gui.example_launcher:main"
+
+[tool.setuptools]
+include-package-data = true
+
+[tool.setuptools.packages.find]
+include = ["gui*"]
+
+[tool.setuptools.package-data]
+gui = ["templates/*.html", "static/css/*.css", "static/js/*.js"]

@@ -112,8 +112,7 @@ Your folder structure should now be:
 To run on Linux, make sure your python env is activate and simply execute the following commands:
 
 ```bash
-cd src/python/
-python run.py
+python src/python/run.py
 ```
 
 Hit 'q' to quit the program!
@@ -131,4 +130,3 @@ On Windows, you can just **double-click the `run_windows.bat` file** instead of 
     - License : [Apache 2.0 License](https://github.com/google-ai-edge/mediapipe/blob/master/LICENSE) 🔗
 - **Code Reuse**: Preprocessing and postprocessing code was used from the [opencv repository](https://github.com/opencv/opencv_zoo/tree/main/models/handpose_estimation_mediapipe)🔗
     - License : [Apache 2.0 License](https://github.com/opencv/opencv_zoo/blob/main/models/handpose_estimation_mediapipe/LICENSE)🔗
-
