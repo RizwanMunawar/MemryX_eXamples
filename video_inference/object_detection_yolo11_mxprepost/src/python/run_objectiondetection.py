@@ -95,8 +95,8 @@ class YoloV11Mxa:
         self.prepost = mxprepost.MxPrepost(
             accl=accl,
             task='yolov11-det',
-            conf=0.6,
-            iou=0.6,
+            conf=0.3,
+            iou=0.4,
         )
 
         # Connect the input and output functions and let the accl run
