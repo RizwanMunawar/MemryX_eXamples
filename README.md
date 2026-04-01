@@ -51,7 +51,31 @@ Clone this repository plus any linked submodules with:
 git clone --recursive https://github.com/memryx/memryx_examples.git
 ```
 
-## Example Categories
+### Step 3: Run an Example
+
+You can proceed in either of the following ways:
+
+#### Option 1: Run an example directly
+
+Open the example you are interested in and follow the installation and run instructions in its `README.md`.
+
+#### Option 2: Use the MemryX Examples Launcher
+
+Use the [`MemryX Examples Launcher`](gui/README.md) for a browser-based way to explore and run examples locally.
+
+## MemryX Examples Launcher
+
+The **MemryX Examples Launcher** is a browser-based interface for exploring and running examples locally.
+
+<picture>
+  <img src="gui/assets/gui_gif.gif" alt="MemryX Examples Launcher preview">
+</picture>
+
+It lets you browse examples by category, open docs and tutorials, launch supported demos, and monitor live logs.
+
+See [`MemryX Examples Launcher`](gui/README.md) for full setup and usage details.
+
+## Explore the Examples
 
 > [!NOTE]
 > Applications marked with **📝** have tutorials available. Clicking on the icon will take you directly to the tutorial page.
@@ -138,7 +162,7 @@ Leverage MemryX accelerators for **real-time video processing** tasks. These app
     </td>
     <!-- new cell -->
     <td align="center" valign="top" width="25%">
-      <a href="video_inference/pose_estimation_yolov8/README.md"><b>YOLOv8 Pose</b></a>
+      <a href="video_inference/pose_estimation_yolov8/README.md"><b>YOLOsv8 Pose</b></a>
       <a href="https://developer.memryx.com/tutorials/realtime_inf/realtime_pose.html">📝</a><br/>
       <a href="video_inference/pose_estimation_yolov8/README.md">
         <img src="video_inference/pose_estimation_yolov8/assets/pose_estimation.gif" style="height:165px; object-fit:cover;" />
@@ -708,6 +732,17 @@ Measure and evaluate the accuracy of various models using MemryX hardware.
 | [**Object Detection Accuracy**](accuracy_calculation/detect_yolov8/README.md) [📝](https://developer.memryx.com/tutorials/accuracy/yolov8_accuracy/yolov8_accuracy.html) | Calculate accuracy for object detection models    | YOLOv8 (Medium)  | ![python-badge] | <img src="https://upload.wikimedia.org/wikipedia/commons/3/35/Tux.svg"  width="20" height="20">
 | [**Keras Classifiers Accuracy**](accuracy_calculation/keras_accuracy/README.md) [📝](https://developer.memryx.com/tutorials/accuracy/keras_classifiers_accuracy/keras_accuracy_rst.html) | Calculate Keras classifiers accuracy on the MXA    | Keras applications  | ![python-badge] | <img src="https://upload.wikimedia.org/wikipedia/commons/3/35/Tux.svg"  width="20" height="20">
 
+## MemryX Examples Launcher
+
+The **MemryX Examples Launcher** is a browser-based interface for exploring and running examples locally.
+
+<picture>
+  <img src="gui/assets/gui_gif.gif" alt="MemryX Examples Launcher preview">
+</picture>
+
+It lets you browse examples by category, open docs and tutorials, launch supported demos, and monitor live logs.
+
+See [`MemryX Examples Launcher`](gui/README.md) for full setup and usage details.
 
 ## Useful Links
 

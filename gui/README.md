@@ -3,7 +3,7 @@
 The **MemryX Examples Launcher** is a browser-based interface for exploring and running applications from the MemryX examples repository.
 
 <picture>
-  <img src="../assets/gui_gif.gif" alt="MemryX Examples Launcher preview">
+  <img src="assets/gui_gif.gif" alt="MemryX Examples Launcher preview">
 </picture>
 
 It brings the most common example workflows into one place, so you can:
