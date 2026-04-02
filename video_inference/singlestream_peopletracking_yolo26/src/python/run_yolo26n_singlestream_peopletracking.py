@@ -413,10 +413,14 @@ class Yolo26Mxa:
                 
                 # Put the frame in the cap_queue to be overlayed later
                 self.cap_queue.put(frame)
-                
-                # Preprocess frame
-                frame = self.model.preprocess(frame)
-                return frame
+
+                # OpenCV reads in BGR format, convert to RGB
+                frame_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+
+                # Preprocess frame for MXA and return it
+                frame_rgb = self.model.preprocess(frame_rgb)
+
+                return frame_rgb
         
 ###################################################################################################
     def postprocess(self, *mxa_output):
