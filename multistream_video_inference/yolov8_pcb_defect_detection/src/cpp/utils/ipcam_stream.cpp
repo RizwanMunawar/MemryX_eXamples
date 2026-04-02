@@ -167,7 +167,7 @@ _mxutil_stream_player_h::_mxutil_stream_player_h(const char *stream_url, const i
 
     printf("media info: resolution = %dx%d, FPS = %d\n", stream_frame_width_, stream_frame_height_, (int)frame_rate_);
 
-    // get ffmpeg sws context to convert codec_ output to BGR
+    // get ffmpeg sws context to convert codec_ output to RGB
     // sws_scale needs width to be 32x on miniPC
     // padding is needed for memory alignment, and that the size of padding depends on CPU used
     img_convert_ctx_ = sws_getContext(codec_ctx_->width, codec_ctx_->height, codec_ctx_->pix_fmt,
