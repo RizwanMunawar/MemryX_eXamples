@@ -63,7 +63,7 @@ Compile the C++ application using CMake:
 mkdir build
 cd build
 cmake ..
-make -j4
+make -j 4
 ```
 
 ### Step 3: Run the Demo
