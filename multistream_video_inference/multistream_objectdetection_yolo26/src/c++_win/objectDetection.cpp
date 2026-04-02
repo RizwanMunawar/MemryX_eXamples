@@ -436,7 +436,7 @@ int main(int argc, char* argv[]) {
                 std::vector<int>{0},                    // device_ids_to_use
                 std::array<bool, 2>{true, true},        // use_model_shape
                 false,                                  // local_mode
-                MX::RPC::SchedulerOptions{600, 0, false, 16, 12},  // sched_options
+                MX::RPC::SchedulerOptions{600, 0, 16, 12, false, 11500, false, 50, 6},  // sched_options
                 MX::RPC::ClientOptions{false, 0},       // client_options
                 "localhost",                            // server_addr
                 10000,                                  // server_port_base
