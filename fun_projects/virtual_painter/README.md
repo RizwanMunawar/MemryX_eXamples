@@ -41,7 +41,8 @@ pip install opencv-python==4.11.0.86
 To download and unzip the precompiled DFPs, use the following commands:
 
 ```bash
-cd assets
+mkdir models
+cd models
 wget https://developer.memryx.com/example_files/2p2/virtual_painter_using_palmdet_handlandmark.zip
 unzip virtual_painter_using_palmdet_handlandmark.zip
 ```

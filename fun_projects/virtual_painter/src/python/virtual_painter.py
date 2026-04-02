@@ -346,12 +346,13 @@ if __name__ == '__main__':
 
 
     virtualpainter_dir     = os.path.dirname(os.path.dirname(os.getcwd()))
-    mx_modeldir            = os.path.join(virtualpainter_dir, 'assets')
+    mx_modeldir            = os.path.join(virtualpainter_dir, 'models')
+    mx_assetsdir          = os.path.join(virtualpainter_dir, 'assets')
     mx_pose                = MxHandPose(mx_modeldir=mx_modeldir, num_hands=2)
-    gesture_datapath = os.path.join(mx_modeldir, 'gesture_data.pkl')
+    gesture_datapath = os.path.join(mx_assetsdir, 'gesture_data.pkl')
 
 
-    with open(os.path.join(mx_modeldir, 'settings.json')) as f:
+    with open(os.path.join(mx_assetsdir, 'settings.json')) as f:
         settings = json.load(f)
 
     paint                = Virtual_Painter(frame_queue=mx_pose, settings=settings, gesture_datapath=gesture_datapath)
