@@ -57,6 +57,7 @@ class App:
         if not ret:
             return None
         self.capture_queue.put(copy.deepcopy(frame),block=True)
+        frame = cv.cvtColor(frame, cv.COLOR_BGR2RGB)
         input_image = cv.resize(frame, dsize=(self.input_size, self.input_size))
         input_image = np.expand_dims(input_image, axis=0)
         input_image = input_image.astype('float32')
