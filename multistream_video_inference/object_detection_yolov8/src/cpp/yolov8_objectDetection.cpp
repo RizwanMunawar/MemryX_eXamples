@@ -146,7 +146,7 @@ class YoloV8 {
             if (model_type == "tflite") {
                 cv::resize(squareImage, resizedImage, cv::Size(640, 640), cv::INTER_LINEAR);
             } else {
-                cv::dnn::blobFromImage(squareImage, resizedImage, 1.0, cv::Size(640, 640), cv::Scalar(0, 0, 0), true, false);
+                cv::dnn::blobFromImage(squareImage, resizedImage, 1.0, cv::Size(640, 640), cv::Scalar(0, 0, 0), false, false);
             }
 
             // Convert to float32 and normalize pixel values (0-1 range)
@@ -179,6 +179,15 @@ class YoloV8 {
                 float y0 = ofmap[num_boxes + i];
                 float w = ofmap[2 * num_boxes + i];
                 float h = ofmap[3 * num_boxes + i];
+
+
+                if (model_type == "tflite") {
+                    x0 *= model_input_width;
+                    y0 *= model_input_height;
+                    w  *= model_input_width;
+                    h  *= model_input_height;
+                }
+
                 x0 *= x_factor;
                 y0 *= y_factor;
                 w *= x_factor;
