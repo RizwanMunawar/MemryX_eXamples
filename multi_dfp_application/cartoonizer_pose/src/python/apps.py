@@ -44,6 +44,7 @@ class Cartoonizer:
             if self.mirror:
                 frame = cv.flip(frame, 1)
 
+            frame = cv.cvtColor(frame, cv.COLOR_BGR2RGB)
             self.capture_queue.put(frame)
             return self.preprocess(frame)
 
@@ -127,6 +128,7 @@ class PoseEstmiation:
             if self.mirror:
                 frame = cv.flip(frame, 1)
 
+            frame = cv.cvtColor(frame, cv.COLOR_BGR2RGB)
             self.capture_queue.put(frame)
             out, self.ratio = self.preprocess_image(frame)
             return out
