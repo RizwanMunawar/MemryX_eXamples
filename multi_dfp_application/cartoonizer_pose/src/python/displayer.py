@@ -44,6 +44,5 @@ class Displayer(QWidget):
 
     def convert_frame(self, frame):
         """Converts OpenCV BGR image to QImage."""
-        rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-        h, w, ch = rgb.shape
-        return QImage(rgb.data, w, h, ch * w, QImage.Format_RGB888)
+        h, w, ch = frame.shape
+        return QImage(frame.data, w, h, ch * w, QImage.Format_RGB888)
