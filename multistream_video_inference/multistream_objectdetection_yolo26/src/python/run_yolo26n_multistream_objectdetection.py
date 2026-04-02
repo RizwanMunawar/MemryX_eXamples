@@ -100,7 +100,10 @@ class Yolo26Mxa:
         The function that starts the inference on the MXA.
         """
         print("dfp path = ", self.dfp_path)
-        accl = MxAccl(self.dfp_path, [0], [True,True], True)
+        # Optimize performance by keeping inputs in opencv's HWC order
+        # by setting use_model_shape to [False (inputs), True (outputs)].
+        # Also, use local_mode=True for faster performance.
+        accl = MxAccl(self.dfp_path, [0], [False,True], True)
         accl.connect_post_model(self.postmodel_path)
         print("YOLOv26 inference on MX3 started")
 

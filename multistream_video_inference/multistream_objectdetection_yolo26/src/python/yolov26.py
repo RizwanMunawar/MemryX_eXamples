@@ -80,9 +80,8 @@ class YoloV26:
         self.ratio = r
         self.pad = dwdh
 
-        # HWC -> BCHW
-        img = np.transpose(img, (2, 0, 1))
-        img = np.expand_dims(img, axis=0)
+        # add Z singleton dimension as expected by MxAccl: HWC -> HWZC
+        img = np.expand_dims(img, axis=2)
 
         return img
 

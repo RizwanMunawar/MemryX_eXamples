@@ -142,7 +142,7 @@ private:
     cv::Mat preprocess(cv::Mat& image) {
 
         cv::Mat resizedImage;
-        cv::dnn::blobFromImage(image, resizedImage, 1.0, cv::Size(model_input_width, model_input_height), cv::Scalar(0, 0, 0), true, false);
+        cv::resize(image, resizedImage, cv::Size(model_input_width, model_input_height));
 
         // Convert image to float32 and normalize
         cv::Mat floatImage;
@@ -262,8 +262,14 @@ private:
 
         //Ouput from the post-processing model is a vector of size 1
         //So copying only the first featuremap
-        src[0]->get_data(mxa_output);
-        // cv::Mat inImage;
+        if(mxa_output != nullptr) // for cleaner shutdowns 
+            if(src[0] != nullptr) // for cleaner shutdowns
+                src[0]->get_data(mxa_output);
+            else
+                return false;
+        else
+            return false;
+
         {
             std::lock_guard<std::mutex> ilock(frame_queue_mutex);
             // pop from frame queue
@@ -304,16 +310,16 @@ public:
         if (video_src.substr(0, 3) == "cam") {
             int device = std::stoi(video_src.substr(4));
             src_is_cam = true;
-#ifdef __linux__
+          #ifdef __linux__
             if (!openCamera(vcap, device, cv::CAP_V4L2)) {
                 throw(std::runtime_error("Failed to open: " + video_src));
             }
 
-#elif defined(_WIN32)
+          #elif defined(_WIN32)
             if (!openCamera(vcap, device, cv::CAP_ANY)) {
                 throw(std::runtime_error("Failed to open: " + video_src));
             }
-#endif
+          #endif
         }
         else if (video_src.substr(0, 3) == "vid") {
             std::cout << "Video source given = " << video_src.substr(4) << "\n\n";
@@ -361,7 +367,7 @@ int main(int argc, char* argv[]) {
 
     std::string video_str = "cam:0";
 
-    // Iterate through the arguments
+    /* [iterate through the arguments set set variables here] */
     for (int i = 1; i < argc; i++) {
 
         std::string arg = argv[i];
@@ -421,8 +427,8 @@ int main(int argc, char* argv[]) {
         video_src_list.push_back(video_str);
     }
 
-    // Initialize the MemryX accelerator
-    MX::Runtime::MxAccl accl{ fs::path(model_path) };
+    // Initialize the MemryX accelerator, with use_model_shape [false,true] to avoid needing NHWC/NCHW input transpose
+    MX::Runtime::MxAccl accl{ fs::path(model_path), {0}, {false,true} };
 
     // Connecting the post-processing model obtained from the autocrop of neural compiler to get the final output.
     // The second parameter is required as the output shape of this particular post-processing model is variable
