@@ -46,7 +46,7 @@ Use the [MemryX Examples Launcher](gui/README.md) for a browser-based way to exp
 ```bash
 python3 -m venv .venv
 source .venv/bin/activate
-pip install --extra-index-url https://developer.memryx.com/pip -e "git+ssh://git@github.com/memryx/memryx_examples_internal.git@gui_app#egg=memryx-examples-launcher[memryx-sdk]"
+pip install --extra-index-url https://developer.memryx.com/pip -e "git+https://github.com/memryx/memryx_examples.git@release#egg=memryx-examples-launcher[memryx-sdk]"
 example_launcher
 ```
 
