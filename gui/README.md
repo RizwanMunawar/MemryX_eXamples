@@ -24,7 +24,7 @@ Use this option to install the launcher directly from the repository.
 ```bash
 python3 -m venv .venv
 source .venv/bin/activate
-pip install --extra-index-url https://developer.memryx.com/pip -e "git+ssh://git@github.com/memryx/memryx_examples_internal.git@gui_app#egg=memryx-examples-launcher[memryx-sdk]"
+pip install --extra-index-url https://developer.memryx.com/pip -e "memryx-examples-launcher[memryx-sdk] @ git+https://github.com/memryx/MemryX_eXamples.git@release"
 example_launcher
 ```
 
