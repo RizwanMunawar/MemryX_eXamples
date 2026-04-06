@@ -113,7 +113,7 @@ class DisplayerWithCheckboxes(QWidget):
             # get DFP results according to checked checkboxes
             for key in self.get_checked_DFP_names():
                 if key not in curr_display_buffer:
-                    time.sleep(0.05)
+                    time.sleep(0.02)
                     return
 
                 dfp_result = curr_display_buffer[key]
@@ -145,8 +145,8 @@ class DisplayerWithCheckboxes(QWidget):
 
         with self.checkbox_lock:
             self.checkbox_states[label] = is_checked
-            print(f"{label} is {'checked' if is_checked else 'unchecked'}")
-            print("Current states:", self.checkbox_states)
+            # print(f"{label} is {'checked' if is_checked else 'unchecked'}")
+            # print("Current states:", self.checkbox_states)
 
     def get_checked_DFP_names(self):
         with self.checkbox_lock:
