@@ -1,10 +1,7 @@
-import sys
-import cv2
-import numpy as np
 import os
 
-from PyQt5.QtWidgets import QApplication, QWidget
-from PyQt5.QtCore import Qt, QRect
+from PyQt5.QtWidgets import QWidget
+from PyQt5.QtCore import QRect
 from PyQt5.QtGui import QImage, QPainter
 
 
@@ -13,12 +10,11 @@ os.environ["QT_QPA_PLATFORM_PLUGIN_PATH"] = "/usr/lib/x86_64-linux-gnu/qt5/plugi
 
 
 class Displayer(QWidget):
-    def __init__(self, num_windows=2):
+    def __init__(self):
         super().__init__()
         self.setWindowTitle("Two Video Streams with PyQt5")
         self.left_frame = None
         self.right_frame = None
-        self.num_windows = num_windows
         self.resize(1280, 480)  # Adjusted height to match content only
 
     def update_left(self, frame):
