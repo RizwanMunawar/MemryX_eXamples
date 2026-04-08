@@ -3,7 +3,7 @@
 # ├── src
 #     └──  python
 #          └── get_imagenet_valdata.sh
-#          └── preprocess.property
+#          └── preprocess.py
 #          └── run_validation.py
 # └── assets
 #     └── ImageNet2012_valdata
@@ -38,7 +38,7 @@ def prepare_imagenet_dataset(imagenet_path, count):
     ├── src
         └──  python
              └── get_imagenet_valdata.sh
-             └── preprocess.property
+             └── preprocess.py
              └── run_validation.py
     └── assets
         └── ImageNet2012_valdata
