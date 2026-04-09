@@ -14,7 +14,9 @@ from ultralytics.data.utils import check_det_dataset
 from ultralytics.models.yolo.detect.val import DetectionValidator
 from ultralytics.utils import LOGGER, TQDM
 
-WEIGHTS_DIR = os.getcwd() / Path("weights")
+BASE_DIR = Path(__file__).resolve().parent.parent
+WEIGHTS_DIR = BASE_DIR / "weights"
+
 BATCH_SIZE = 8
 
 
