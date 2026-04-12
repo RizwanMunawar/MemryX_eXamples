@@ -22,8 +22,9 @@ Choose the installation flow that matches your setup.
 Use this option to install the launcher directly from the repository.
 
 ```bash
-python3 -m venv .venv
-source .venv/bin/activate
+python3 -m venv mxgui
+source mxgui/bin/activate
+pip install --upgrade pip
 pip install --extra-index-url https://developer.memryx.com/pip -e "memryx-examples-launcher[memryx-sdk] @ git+https://github.com/memryx/MemryX_eXamples.git@release"
 example_launcher
 ```
@@ -33,8 +34,9 @@ example_launcher
 Use this option if you already have the repository cloned locally.
 
 ```bash
-python3 -m venv .venv
-source .venv/bin/activate
+python3 -m venv mxgui
+source mxgui/bin/activate
+pip install --upgrade pip
 pip install --extra-index-url https://developer.memryx.com/pip -e ".[memryx-sdk]"
 example_launcher
 ```
