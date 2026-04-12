@@ -20,7 +20,7 @@ import time
 import argparse
 import numpy as np
 import cv2
-from queue import Queue
+from queue import Queue, Full
 from threading import Thread
 import sys
 from memryx import mxapi
@@ -49,6 +49,7 @@ class FireSmokeDetectionApp:
         self.cap_queue = Queue(maxsize=4)
         self.dets_queue = Queue(maxsize=5)
         self.gui_callback = None  
+        self.accl = None
         
         # Parse video source
         if "/dev/video" in str(video_path) or video_path == 'cam' or (isinstance(video_path, str) and video_path.isdigit()):
@@ -102,12 +103,40 @@ class FireSmokeDetectionApp:
         self.display_thread = Thread(target=self.display, args=(), daemon=True)
 
     ###############################################################################
+    def request_stop(self):
+        """Request a clean shutdown for capture, display, and accelerator."""
+        self.done = True
+
+        # Stop accelerator first so callbacks unblock quickly.
+        if self.accl is not None and hasattr(self.accl, "stop"):
+            try:
+                self.accl.stop()
+            except Exception:
+                pass
+
+        if self.vidcap is not None and self.vidcap.isOpened():
+            self.vidcap.release()
+
+    def _queue_put_with_abort(self, queue_obj, item, timeout=0.05):
+        """
+        Queue put that can be interrupted by shutdown.
+        Returns False when shutdown has been requested.
+        """
+        while not self.done:
+            try:
+                queue_obj.put(item, timeout=timeout)
+                return True
+            except Full:
+                continue
+        return False
+
+    ###############################################################################
     def run(self):
         """
         The function that starts the inference on the MXA.
         """
         print("dfp path = ", self.dfp_path)
-        accl = mxapi.MxAccl(
+        self.accl = mxapi.MxAccl(
             dfp_path=self.dfp_path,
             local_mode=True,
             use_model_shape=[False, False],
@@ -119,23 +148,21 @@ class FireSmokeDetectionApp:
 
         start_time = time.time()
 
-        accl.connect_stream(
+        self.accl.connect_stream(
             self.capture_and_preprocess,
             self.postprocess,
             stream_id=0,
             model_id=0,
         )
 
-        accl.start()
-        accl.wait()
-        
-        self.done = True
+        try:
+            self.accl.start()
+            self.accl.wait()
+        finally:
+            self.request_stop()
 
-        self.display_thread.join()
-        
-      
-        if self.vidcap is not None:
-            self.vidcap.release()
+        if self.display_thread.is_alive():
+            self.display_thread.join()
         
         running_time = time.time() - start_time
         print(f"\n{'='*50}")
@@ -183,8 +210,9 @@ class FireSmokeDetectionApp:
             if self.src_is_cam and self.cap_queue.full():
                 continue
             else:
+                if not self._queue_put_with_abort(self.cap_queue, frame):
+                    return None
                 self.num_frames += 1
-                self.cap_queue.put(frame)
                 frame = self.model.preprocess(frame)
                 return frame
 
@@ -209,7 +237,8 @@ class FireSmokeDetectionApp:
 
         # Push the results to the queue for the display thread
         if not self.done:
-            self.dets_queue.put(dets)
+            if not self._queue_put_with_abort(self.dets_queue, dets):
+                return
 
         # Calculate current FPS
         self.dt_array[self.dt_index] = time.time() - self.frame_end_time
@@ -308,7 +337,7 @@ class FireSmokeDetectionApp:
                 key = cv2.waitKey(1) & 0xFF
                 if key == ord('q'):
                     print("\nQuitting... please wait")
-                    self.done = True
+                    self.request_stop()
                     break
         
         # Cleanup display resources
@@ -326,15 +355,15 @@ if __name__ == "__main__":
     parser.add_argument(
         '-d', '--dfp', 
         type=str, 
-        default="../../models/yolov11n_fire_smoke_detection.dfp", 
-        help="Path to the compiled DFP file (default: '../../models/yolov11n_fire_smoke_detection.dfp')"
+        default="../../models/fire_smoke_detection_v11n.dfp", 
+        help="Path to the compiled DFP file (default: '../../models/fire_smoke_detection_v11n.dfp')"
     )
     
     parser.add_argument(
         '-m', '--postmodel', 
         type=str, 
-        default="../../models/yolov11n_fire_smoke_detection_post.onnx", 
-        help="Path to the post-processing ONNX model (default: '../../models/yolov11n_fire_smoke_detection_post.onnx')"
+        default="../../models/fire_smoke_detection_v11n_post.onnx", 
+        help="Path to the post-processing ONNX model (default: '../../models/fire_smoke_detection_v11n_post.onnx')"
     )
 
     parser.add_argument(
@@ -385,9 +414,6 @@ if __name__ == "__main__":
         iou_thres=args.nms,
         display_size=display_size
     )
-    
-    # Start display thread for processing
-    app_core.display_thread.start()
     
     # Create Qt Application and GUI
     qt_app = QApplication(sys.argv)

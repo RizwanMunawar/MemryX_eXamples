@@ -13,7 +13,7 @@ The **Fire and Smoke Detection** example demonstrates real-time fire and smoke d
 | **Model**            | [YOLOv8 small](https://docs.ultralytics.com/models/yolov8/)
 | **Model Type**       | Object Detection
 | **Framework**        | [ONNX](https://onnx.ai/) 
-| **Pre-compiled DFP** | [Download here](https://developer.memryx.com/example_files/2p0/fire_smoke_detection_v8s.zip)
+| **Pre-compiled DFP** | [Download here](https://developer.memryx.com/example_files/2p2/fire_smoke_detection_v11n.zip)
 | **Dataset**          | [*Smoke-Fire-Detection-YOLO*. Kaggle](https://www.kaggle.com/datasets/sayedgamal99/smoke-fire-detection-yolo) 
 | **Model Resolution** | 640x640 
 | **Output**           | Fire and smoke bounding boxes with confidence scores
@@ -41,10 +41,10 @@ For MemryX SDK installation, please refer to [MemryX Developer Hub](https://deve
 mkdir -p models
 cd models
 
-wget https://developer.memryx.com/example_files/2p0/fire_smoke_detection_v8s.zip
-unzip fire_smoke_detection_v8s.zip
+wget https://developer.memryx.com/example_files/2p2/fire_smoke_detection_v11n.zip
+unzip fire_smoke_detection_v11n.zip
 
-rm fire_smoke_detection_v8s.zip
+rm fire_smoke_detection_v11s.zip
 cd ..
 ```
 <details> 
@@ -60,15 +60,15 @@ cd models
 You can download the pre-trained YOLOv8s model using the following commands:
 
 ```bash
-wget https://developer.memryx.com/example_files/2p0/fire_smoke_detection_v8s_onnx.zip
-unzip fire_smoke_detection_v8s_onnx.zip
-rm fire_smoke_detection_v8s_onnx.zip
+wget https://developer.memryx.com/example_files/2p2/fire_smoke_detection_v11n_onnx.zip
+unzip fire_smoke_detection_v11n_onnx.zip
+rm fire_smoke_detection_v11n_onnx.zip
 ```
 
 You can use the MemryX Neural Compiler to compile the model and generate the DFP file required by the accelerator. If you prefer, you can download the pre-compiled DFP and skip this step.
 
 ```bash
-mx_nc -m fire_smoke_detection_v8s_onnx.onnx --autocrop
+mx_nc -m fire_smoke_detection_v11n.onnx --autocrop
 ```
 
 </details>
@@ -102,8 +102,8 @@ python run.py --video_path [File_Path]
 
 The app supports the following command-line arguments:
 
-- `-d` or `--dfp`: Path to the compiled DFP file (default: `../../models/newfire11n.dfp`)
-- `-m` or `--postmodel`: Path to the post-processing ONNX file (default: `../../models/newfire11n_post.onnx`)
+- `-d` or `--dfp`: Path to the compiled DFP file (default: `../../models/fire_smoke_detection_v11n.dfp`)
+- `-m` or `--postmodel`: Path to the post-processing ONNX file (default: `../../models/fire_smoke_detection_v11n_post.onnx`)
 - `--video_path`: Path to video file or `cam` for webcam (default: `../../assets/test0.mp4`)
 - `--nms`: NMS/IoU threshold for filtering overlapping boxes (default: `0.45`)
 - `--display_size`: Display window size as WIDTHxHEIGHT (e.g., `1920x1080`)

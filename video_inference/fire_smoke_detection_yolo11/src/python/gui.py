@@ -29,8 +29,9 @@ class FireSmokeGUI(QMainWindow):
     
     def __init__(self, app, dfp, post_model):
         super().__init__()
-        self.setWindowTitle("🔥 Fire & Smoke Detection - MemryX MXA")
+        self.setWindowTitle("Fire & Smoke Detection - MemryX MXA")
         self.setGeometry(100, 100, 1200, 800)
+        self._is_closing = False
         
         # Set dark theme with fire accent colors
         self.setStyleSheet("""
@@ -376,38 +377,54 @@ class FireSmokeGUI(QMainWindow):
     def run_accelerator(self):
         """Run the MXA accelerator in background thread"""
         try:
+            if self.app.done:
+                return
+
             if not self.app.display_thread.is_alive():
                 self.app.display_thread.start()
 
-            accl = mxapi.MxAccl(
+            if self.app.done:
+                return
+
+            self.app.accl = mxapi.MxAccl(
                 dfp_path=self.dfp,
                 local_mode=True,
                 use_model_shape=[False, False],
             )
 
-            accl.connect_stream(
+            self.app.accl.connect_stream(
                 self.app.capture_and_preprocess,
                 self.app.postprocess,
                 stream_id=0,
                 model_id=0,
             )
-            accl.start()
-            accl.wait()
-            self.app.done = True
+            self.app.accl.start()
+            self.app.accl.wait()
         except Exception as e:
-            print(f"Accelerator error: {e}")
+            if not self.app.done:
+                print(f"Accelerator error: {e}")
+        finally:
             self.app.done = True
+
+    def shutdown_app(self):
+        """Stop background processing and wait briefly for workers to exit."""
+        if self._is_closing:
+            return
+        self._is_closing = True
+
+        self.app.gui_callback = None
+        self.app.request_stop()
+
+        if self.app.display_thread.is_alive():
+            self.app.display_thread.join(timeout=1.0)
+        if self.accl_thread.is_alive():
+            self.accl_thread.join(timeout=1.0)
     
     def close_application(self):
         """Clean shutdown"""
-        self.app.done = True
-        if self.app.vidcap is not None:
-            self.app.vidcap.release()
         self.close()
     
     def closeEvent(self, event):
         """Handle window close"""
-        self.app.done = True
-        if self.app.vidcap is not None:
-            self.app.vidcap.release()
+        self.shutdown_app()
         event.accept()
