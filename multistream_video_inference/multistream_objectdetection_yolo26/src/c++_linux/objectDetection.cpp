@@ -142,7 +142,7 @@ private:
     cv::Mat preprocess(cv::Mat& image) {
 
         cv::Mat resizedImage;
-        cv::dnn::blobFromImage(image, resizedImage, 1.0, cv::Size(model_input_width, model_input_height), cv::Scalar(0, 0, 0), true, false);
+        cv::resize(image, resizedImage, cv::Size(model_input_width, model_input_height));
 
         // Convert image to float32 and normalize
         cv::Mat floatImage;
@@ -168,39 +168,52 @@ private:
 
     std::vector<detectedObj> get_detections(float* output, int num_boxes) {
         std::vector<detectedObj> detections;
-        
-        // YOLOv26 output format: (1, 300, 6) where each detection is [x1, y1, x2, y2, confidence, class_id]
-        // The output is flattened, so we access it as output[i * 6 + offset]
-        
+
+        // YOLOv26 output format: (1, 300, 6)
+        // [x1, y1, x2, y2, confidence, class_id]
         for (int i = 0; i < num_boxes; i++) {
-            //Decoding model output - YOLOv26 format: [x1, y1, x2, y2, confidence, class_id]
             float x1 = output[i * 6 + 0];
             float y1 = output[i * 6 + 1];
             float x2 = output[i * 6 + 2];
             float y2 = output[i * 6 + 3];
             float accuracy = output[i * 6 + 4];
             int classPrediction = static_cast<int>(output[i * 6 + 5]);
-            
-            // Skip invalid detections (x1 < 0 indicates padding/invalid detection)
-            if (x1 < 0) {
-                continue;
-            }
-            
-            // Filter by confidence threshold
+
             if (accuracy < conf_thresh) {
                 continue;
             }
 
-            // Coords should be scaled to the display image. The coords from the model are relative to the model's input height and width.
+            // Skip clearly invalid boxes
+            if (x2 <= x1 || y2 <= y1) {
+                continue;
+            }
+
+            // Scale from model input space to original image space
             x1 = (x1 / model_input_width) * input_image_width;
             x2 = (x2 / model_input_width) * input_image_width;
             y1 = (y1 / model_input_height) * input_image_height;
             y2 = (y2 / model_input_height) * input_image_height;
 
-            detectedObj obj(x1, x2, y1, y2, classPrediction, accuracy);
+            // Reject boxes completely outside the image
+            if (x2 <= 0 || y2 <= 0 || x1 >= input_image_width || y1 >= input_image_height) {
+                continue;
+            }
 
+            // Clip boxes to image boundaries
+            x1 = std::max(0.0f, std::min(x1, static_cast<float>(input_image_width - 1)));
+            y1 = std::max(0.0f, std::min(y1, static_cast<float>(input_image_height - 1)));
+            x2 = std::max(0.0f, std::min(x2, static_cast<float>(input_image_width - 1)));
+            y2 = std::max(0.0f, std::min(y2, static_cast<float>(input_image_height - 1)));
+
+            // Reject boxes that became invalid after clipping
+            if (x2 <= x1 || y2 <= y1) {
+                continue;
+            }
+
+            detectedObj obj(x1, x2, y1, y2, classPrediction, accuracy);
             detections.push_back(obj);
         }
+
         return detections;
     }
 
@@ -249,8 +262,14 @@ private:
 
         //Ouput from the post-processing model is a vector of size 1
         //So copying only the first featuremap
-        src[0]->get_data(mxa_output);
-        // cv::Mat inImage;
+        if(mxa_output != nullptr) // for cleaner shutdowns 
+            if(src[0] != nullptr) // for cleaner shutdowns
+                src[0]->get_data(mxa_output);
+            else
+                return false;
+        else
+            return false;
+
         {
             std::lock_guard<std::mutex> ilock(frame_queue_mutex);
             // pop from frame queue
@@ -291,16 +310,16 @@ public:
         if (video_src.substr(0, 3) == "cam") {
             int device = std::stoi(video_src.substr(4));
             src_is_cam = true;
-#ifdef __linux__
+          #ifdef __linux__
             if (!openCamera(vcap, device, cv::CAP_V4L2)) {
                 throw(std::runtime_error("Failed to open: " + video_src));
             }
 
-#elif defined(_WIN32)
+          #elif defined(_WIN32)
             if (!openCamera(vcap, device, cv::CAP_ANY)) {
                 throw(std::runtime_error("Failed to open: " + video_src));
             }
-#endif
+          #endif
         }
         else if (video_src.substr(0, 3) == "vid") {
             std::cout << "Video source given = " << video_src.substr(4) << "\n\n";
@@ -348,7 +367,7 @@ int main(int argc, char* argv[]) {
 
     std::string video_str = "cam:0";
 
-    // Iterate through the arguments
+    /* [iterate through the arguments set set variables here] */
     for (int i = 1; i < argc; i++) {
 
         std::string arg = argv[i];
@@ -408,8 +427,8 @@ int main(int argc, char* argv[]) {
         video_src_list.push_back(video_str);
     }
 
-    // Initialize the MemryX accelerator
-    MX::Runtime::MxAccl accl{ fs::path(model_path) };
+    // Initialize the MemryX accelerator, with use_model_shape [false,true] to avoid needing NHWC/NCHW input transpose
+    MX::Runtime::MxAccl accl{ fs::path(model_path), {0}, {false,true} };
 
     // Connecting the post-processing model obtained from the autocrop of neural compiler to get the final output.
     // The second parameter is required as the output shape of this particular post-processing model is variable

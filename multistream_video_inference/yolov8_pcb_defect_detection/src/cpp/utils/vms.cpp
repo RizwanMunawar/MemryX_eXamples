@@ -126,7 +126,7 @@ void InitCapFunc(VmsCfg config, int idx, InputSource **stream_cap, int disp_widt
     }
     else if (vis.type == VIDEO_FROM_FILE)
     {
-        *stream_cap = new VideoFileStream(vis.access_value.c_str(), disp_width, disp_height, config.video_predecoded_frames, 60);
+        *stream_cap = new VideoFileStream(vis.access_value.c_str(), disp_width, disp_height, config.video_predecoded_frames, 60, FRAME_FMT_RGB);
         // *stream_cap = new VideoFileStreamReal(vis.access_value.c_str(), disp_width, disp_height);
     }
     else if (vis.type == VIDEO_FROM_USBCAM)

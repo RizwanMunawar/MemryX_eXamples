@@ -56,6 +56,7 @@ class Cartoonizer:
             return self.preprocess(frame)
 
     def preprocess(self, img):
+        img = cv.cvtColor(img, cv.COLOR_BGR2RGB)
         arr = cv.resize(img, (512, 512)).astype(np.float32)
         arr = arr / 127.5 - 1
         arr = np.expand_dims(arr, 0)
@@ -195,6 +196,7 @@ class PoseEstimation:
             return out
 
     def preprocess_image(self, image):
+        image = cv.cvtColor(image, cv.COLOR_BGR2RGB)
         h, w = image.shape[:2]
         r = min(self.model_input_shape[0] / h, self.model_input_shape[1] / w)
         resized = cv.resize(image, (int(w * r), int(h * r)))

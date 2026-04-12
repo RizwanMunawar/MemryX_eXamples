@@ -82,4 +82,4 @@ endif()
 
 
 # Copy DFP file to the binary directory during the build
-file(COPY "../../models/midas_v2_small.dfp" DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
+file(COPY "../../models/MiDaS_256_256_3_tflite.dfp" DESTINATION ${CMAKE_CURRENT_BINARY_DIR})

@@ -1,6 +1,6 @@
 import os
 import argparse
-from queue import Queue
+from queue import Queue, Empty
 import time
 from collections import namedtuple
 
@@ -10,51 +10,35 @@ import numpy as np
 from memryx import AsyncAccl, SchedulerOptions, ClientOptions
 from FaceDetector import FaceDetector
 import signal
-import sys
+from threading import Event
 
-run_flag = False
-
+stop_flag = Event()
 
 # Function to handle Ctrl+C (SIGINT)
 def signal_handler(sig, frame):
     print("Exiting program with Ctrl+C...")
-    cleanup_and_exit()
+    stop_flag.set()  # Signal threads to stop
 
-
-# Cleanup and exit function to properly terminate resources
-def cleanup_and_exit():
-    """
-    Releases all resources, closes the window, and exits the program.
-    """
-    global run_flag
-    run_flag = False
-    cv.destroyAllWindows()  # Close any OpenCV windows
-
-    print("Resources released. Exiting.")
-    sys.exit(0)
-
-
-class App:
-    def __init__(self, cam, scale=1.0):
+class FaceCropCartoonizer:
+    def __init__(self, cam, stop_flag, src_is_cam, show=True):
         self.cam = cam
+        self.show = show
+        self.src_is_cam = src_is_cam
 
         # Create a namedtuple for shape
         Shape = namedtuple("Shape", ["height", "width"])
         self.face_model = FaceDetector(model_input_shape=Shape(height=128, width=128))
 
-        self.input_height = int(cam.get(cv.CAP_PROP_FRAME_HEIGHT) * scale)
-        self.input_width = int(cam.get(cv.CAP_PROP_FRAME_WIDTH) * scale)
+        self.input_height = int(cam.get(cv.CAP_PROP_FRAME_HEIGHT))
+        self.input_width = int(cam.get(cv.CAP_PROP_FRAME_WIDTH))
 
         # init queues
-        self.frame_queue = Queue()
+        self.frame_queue = Queue(maxsize=20)
         self.relay_frame_queue = Queue()
         self.face_dets_queue = Queue()
 
-        self.face_frame_cnt = 0  # Counter for face frames processed
-        self.cartoonizer_frame_cnt = 0  # Counter for cartoonizer frames processed
-
-        global run_flag
-        run_flag = True
+        self.stop_flag = stop_flag
+        
 
     def get_face_box(self, det):
         ymin = int(det[0] * self.input_height)
@@ -76,15 +60,21 @@ class App:
 
     def get_frame_face(self):
 
-        global run_flag
-        if run_flag is False:
-            return None
-
         while True:
+
+            if self.stop_flag.is_set():
+                print("Stop flag set, exiting get_frame_face loop.")
+                return None
+
+            if not self.src_is_cam:
+                time.sleep(0.03)  # regulate speed for video input
+            
             ok, frame = self.cam.read()  # Read frame from camera
+
             if not ok:
                 print("EOF")  # Handle end of stream
                 return None
+                
             if self.frame_queue.full():
                 # drop frame (and ONLY in this first model!)
                 # dependent models shouldn't drop anything
@@ -104,8 +94,6 @@ class App:
 
         self.face_dets_queue.put(dets)
 
-        # self.face_frame_cnt += 1  # Increment face frame count
-        # print("face_frame_cnt:", self.face_frame_cnt, flush=True)
 
     def preprocess_cartoonizer(self, img):
         arr = np.array(cv.resize(img, (512, 512))).astype(np.float32)
@@ -118,14 +106,19 @@ class App:
         return arr
 
     def get_frame_cartoonizer(self):
+        
+        while not self.stop_flag.is_set() or not self.frame_queue.empty():
 
-        global run_flag
-        if run_flag is False:
-            return None
-
-        frame = self.frame_queue.get()
-        self.relay_frame_queue.put(frame)
-        return self.preprocess_cartoonizer(frame)
+            try:
+                frame = self.frame_queue.get(timeout=0.1)  # Wait for a frame to be available
+            except Empty:
+                continue # No frame available, check stop flag and loop again
+            
+            self.relay_frame_queue.put(frame)
+            return self.preprocess_cartoonizer(frame)
+        
+        print("Stop flag set and frame queue empty, exiting get_frame_cartoonizer loop.")
+        return None
 
     def postprocess_cartoonizer(self, frame, original_shape):
 
@@ -164,10 +157,10 @@ class App:
                 cartoon_patch = cartoonized_img[ymin:ymax, xmin:xmax]
 
                 # Convert cartoonized face patch to grayscale like a ghost!
-                gray_cartoon_patch = cv.cvtColor(cartoon_patch, cv.COLOR_BGR2GRAY)
+                gray_cartoon_patch = cv.cvtColor(cartoon_patch, cv.COLOR_RGB2GRAY)
 
                 # Convert grayscale patch to 3-channel
-                gray_3ch = cv.cvtColor(gray_cartoon_patch, cv.COLOR_GRAY2BGR)
+                gray_3ch = cv.cvtColor(gray_cartoon_patch, cv.COLOR_GRAY2RGB)
 
                 # Replace region in display_img with cartoonized patch
                 display_img[ymin:ymax, xmin:xmax] = gray_3ch
@@ -177,40 +170,31 @@ class App:
                     display_img, (xmin, ymin), (xmax, ymax), (255, 0, 0), 3
                 )
 
-        self.display(display_img)
-
-        # self.cartoonizer_frame_cnt += 1  # Increment cartoonizer frame count
-        # print("cartoonizer_frame_cnt:", self.cartoonizer_frame_cnt, flush=True)
+        # display
+        if self.show:
+            self.display(display_img)
 
     def display(self, img):
         cv.imshow("display", img)  # Show the image in a window
-        time.sleep(0.01)  # Sleep to allow the window to update
         if cv.waitKey(1) == ord("q"):  # Exit on 'q' key press
-            self.cam.release()  # Release the camera resource
-            cv.destroyAllWindows()  # Close OpenCV windows
-            os._exit(0)
+            print("Exit signal received. Closing...")
+            stop_flag.set()  # Signal threads to stop
 
-
+            
 # Main function to run the application with MemryX AsyncAccl
-def run_dfps(dfp_face, dfp_cartoon):
+def run_dfps(args):
 
-    face_sche_opts = SchedulerOptions(
-              frame_limit=20,
-              time_limit=0,
-              ifmap_queue_size=20,
-              ofmap_queue_size=36
-            )
-    cart_sche_opts = SchedulerOptions(
-                frame_limit=0,
-                time_limit=50,
-                ifmap_queue_size=40,
-                ofmap_queue_size=40
-            )
+    face_sche_opts = SchedulerOptions()
+    face_sche_opts.frame_limit = args.frame_limit
+    
+    cart_sche_opts = SchedulerOptions()
+    cart_sche_opts.frame_limit = args.frame_limit
+    
     client_opts = ClientOptions(True, 30.0) # smooth result to 30 FPS
 
     # Initialize AsyncAccl for face detection and cartoonizer
-    accl_face = AsyncAccl(dfp_face, scheduler_options=face_sche_opts, client_options=client_opts)
-    accl_cartoonizer = AsyncAccl(dfp_cartoon, scheduler_options=cart_sche_opts, client_options=client_opts)
+    accl_face = AsyncAccl(args.dfp_face, scheduler_options=face_sche_opts, client_options=client_opts)
+    accl_cartoonizer = AsyncAccl(args.dfp_cartoonizer, scheduler_options=cart_sche_opts, client_options=client_opts)
 
     # Connect face detection input and output
     accl_face.connect_input(app.get_frame_face)
@@ -245,6 +229,22 @@ if __name__ == "__main__":
         default="../../models/cartoonizer.dfp",
         help="Path to the Cartoonizer DFP file (default: ../../models/cartoonizer.dfp)",
     )
+    parser.add_argument(
+        "--no_display",
+        dest="show",
+        action="store_false",
+        default=True,
+        help="Turn off video display",
+    )
+    
+    parser.add_argument(
+        "--frame_limit",
+        "-f",
+        type=int,
+        default=3,
+        help="Number of frames to process before swapping out to another DFP (default: 3)",
+    )
+    
     parser.add_argument("--video", type=str, help="Path to video file (instead of cam)")
 
     args = parser.parse_args()
@@ -258,10 +258,10 @@ if __name__ == "__main__":
     cam = cv.VideoCapture(input_source)
 
     # Initialize the application
-    app = App(cam)
+    app = FaceCropCartoonizer(cam, stop_flag, src_is_cam=args.video, show=args.show)
 
     # Run the application with the provided DFP
-    run_dfps(args.dfp_face, args.dfp_cartoonizer)
+    run_dfps(args)
 
     # After shutdown, release the camera and destroy all windows
     cam.release()

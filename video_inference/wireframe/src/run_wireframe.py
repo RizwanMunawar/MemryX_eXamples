@@ -122,6 +122,7 @@ class WireframeMxa(QtWidgets.QApplication):
 
                 # Preprocess the frame
                 resized_image = cv.resize(frame, (self.input_shape[0], self.input_shape[1]), interpolation=cv.INTER_AREA)
+                resized_image = cv.cvtColor(resized_image, cv.COLOR_BGR2RGB)
                 resized_image = resized_image * 0.007843137718737125 - 1
                 resized_image = np.concatenate([resized_image, np.ones([self.input_shape[0], self.input_shape[1], 1])], axis=-1)
                 expanded_image = np.expand_dims(resized_image, axis=0).astype('float32')

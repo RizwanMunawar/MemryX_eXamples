@@ -122,10 +122,11 @@ public:
      * @param disp_height The desired height for display.
      * @param num_predec_frames The number of frames to pre-decode for smoother playback.
      * @param target_fps The desired frames per second (FPS) for display.
+     * @param frame_fmt The frame format (FRAME_FMT_RGB or FRAME_FMT_BGR).
      */
-    VideoFileStream(const char *file_path, const int disp_width, const int disp_height, int num_predec_frames, int target_fps)
+    VideoFileStream(const char *file_path, const int disp_width, const int disp_height, int num_predec_frames, int target_fps, int frame_fmt = FRAME_FMT_RGB)
     {
-        vfctx_ = mxutil_vdo_player_decode(file_path, num_predec_frames, disp_width, disp_height, FRAME_FMT_RGB, target_fps);
+        vfctx_ = mxutil_vdo_player_decode(file_path, num_predec_frames, disp_width, disp_height, frame_fmt, target_fps);
     }
 
     // Destructor

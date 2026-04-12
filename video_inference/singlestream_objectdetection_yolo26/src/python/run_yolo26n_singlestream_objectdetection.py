@@ -115,14 +115,12 @@ class Yolo26Mxa:
         """
         Captures a frame for the video device and pre-processes it.
         """
-
         while True:
 
             got_frame, frame = self.vidcap.read()
 
             if not got_frame:
                 return None
-
 
             if self.src_is_cam and self.cap_queue.full():
                 # drop the frame and try again
@@ -133,9 +131,12 @@ class Yolo26Mxa:
                 # Put the frame in the cap_queue to be overlayed later
                 self.cap_queue.put(frame)
 
-                # Preporcess frame
-                frame = self.model.preprocess(frame)
-                return frame
+                # OpenCV reads in BGR format, convert to RGB
+                frame_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+
+                # Preprocess frame for MXA and return it
+                frame_rgb = self.model.preprocess(frame_rgb)
+                return frame_rgb
         
     ###############################################################################
     # Post process the output from MXA

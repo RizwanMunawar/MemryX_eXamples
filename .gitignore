@@ -10,3 +10,4 @@
 *.zip
 # Ignore the models directory and its contents
 models/
+*.sh

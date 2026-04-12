@@ -60,10 +60,11 @@ class App:
         h, w = image.shape[:2]
         r = min(self.model_input_shape[0] / h, self.model_input_shape[1] / w)
         image_resized = cv.resize(image, (int(w * r), int(h * r)), interpolation=cv.INTER_LINEAR)
+        image_resized_rgb = cv.cvtColor(image_resized, cv.COLOR_BGR2RGB)  # Convert BGR to RGB
         
         # Create a padded image
         padded_img = np.ones((self.model_input_shape[0], self.model_input_shape[1], 3), dtype=np.uint8) * 114
-        padded_img[:int(h * r), :int(w * r)] = image_resized
+        padded_img[:int(h * r), :int(w * r)] = image_resized_rgb
 
         # Normalize image to [0, 1] range
         padded_img = padded_img / 255.0

@@ -11,6 +11,10 @@ find_package(Qt5 COMPONENTS Widgets Core Gui REQUIRED)
 include_directories(${OpenCV_INCLUDE_DIRS}
                     )
 
+# optimize for performance
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O3 -fopenmp -march=native")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3 -fopenmp -march=native")
+
 file(GLOB local_src
     "*.c"
     "*.cpp"

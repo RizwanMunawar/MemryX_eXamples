@@ -107,7 +107,7 @@ To run the Python example for real-time parking management using MX3, simply nav
 
 ```bash
 cd src/python/
-python3 run_parking_management.py.py [--cam | --video VIDEO] [-j, --json REGIONS_JSON]
+python3 run_parking_management.py --video ../../assets/parking_sample.mp4
 ```
 
 Where you either use:

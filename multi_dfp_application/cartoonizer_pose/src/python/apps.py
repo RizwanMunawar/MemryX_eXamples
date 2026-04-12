@@ -6,26 +6,19 @@ from collections import deque
 
 
 class Cartoonizer:
-    def __init__(self, frame_queue, accl, display_thread, show=True, scale=1.0, time_code=True, mirror=True, src_is_cam=True, stop_flag=None):
+    def __init__(self, frame_queue, display_thread, show=True, scale=1.0, mirror=True, src_is_cam=True, stop_flag=None):
         self.frame_queue = frame_queue
         self.display_thread = display_thread
         self.scale = scale
         self.show = show
-        self.time_code = time_code
         self.mirror = mirror
         self.src_is_cam = src_is_cam
         self.stop_flag = stop_flag
 
         self.input_height = None
         self.input_width = None
-        self.prev_t = None
-        self.frame_count = 0
         self.capture_queue = Queue(maxsize=30)
         self.frame_times = deque(maxlen=30)
-
-        self.accl = accl
-        self.accl.connect_input(self.get_frame)
-        self.accl.connect_output(self.process_model_output)
 
     def get_frame(self):
         while True:
@@ -44,6 +37,7 @@ class Cartoonizer:
             if self.mirror:
                 frame = cv.flip(frame, 1)
 
+            frame = cv.cvtColor(frame, cv.COLOR_BGR2RGB)
             self.capture_queue.put(frame)
             return self.preprocess(frame)
 
@@ -76,7 +70,7 @@ class Cartoonizer:
 
 
 class PoseEstmiation:
-    def __init__(self, frame_queue, accl, display_thread, model_input_shape, mirror=False, src_is_cam=False, stop_flag=None, post_model=None):
+    def __init__(self, frame_queue, display_thread, model_input_shape, mirror=False, src_is_cam=False, stop_flag=None):
         self.frame_queue = frame_queue
         self.display_thread = display_thread
         self.model_input_shape = model_input_shape
@@ -105,11 +99,6 @@ class PoseEstmiation:
             (6, 12), (11, 12), (11, 13), (13, 15), (12, 14), (14, 16)
         ]
 
-        self.accl = accl
-        self.accl.set_postprocessing_model(post_model, model_idx=0)
-        self.accl.connect_input(self.generate_frame)
-        self.accl.connect_output(self.process_model_output)
-
     def generate_frame(self):
         while True:
             try:
@@ -127,6 +116,7 @@ class PoseEstmiation:
             if self.mirror:
                 frame = cv.flip(frame, 1)
 
+            frame = cv.cvtColor(frame, cv.COLOR_BGR2RGB)
             self.capture_queue.put(frame)
             out, self.ratio = self.preprocess_image(frame)
             return out

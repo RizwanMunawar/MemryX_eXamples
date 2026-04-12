@@ -1,6 +1,6 @@
-import os
 import threading, json, cv2, sys, pickle
 import numpy as np
+from pathlib import Path
 from MxHandPose import MxHandPose
 
 class MediapipeHandsDemo:
@@ -67,7 +67,7 @@ class MediapipeHandsDemo:
 
         self.mxpose.stop()
         self.cap.release()
-        sys.exit(0)
+        os._exit(0)
 
     def and_display(self):
 
@@ -96,7 +96,7 @@ class MediapipeHandsDemo:
                     break
 
         cv2.destroyAllWindows()
-        sys.exit(0)
+        os._exit(0)
 
 
 
@@ -160,7 +160,13 @@ class MediapipeHandsDemo:
 
 if __name__ == '__main__':
 
-    top_level_dir  = os.path.dirname(os.path.dirname(os.getcwd()))
-    mx_modeldir    = os.path.join(top_level_dir, 'models')
-    mx_pose        = MxHandPose(mx_modeldir=mx_modeldir, num_hands=2)
-    paint          = MediapipeHandsDemo(mxpose=mx_pose)
+    project_dir = Path(__file__).resolve().parents[2]
+    mx_modeldir = project_dir / 'models'
+
+    try:
+        mx_pose = MxHandPose(mx_modeldir=mx_modeldir, num_hands=2)
+    except (FileNotFoundError, RuntimeError) as exc:
+        print(f"Failed to start Mediapipe Hands: {exc}", file=sys.stderr)
+        sys.exit(1)
+
+    paint = MediapipeHandsDemo(mxpose=mx_pose)

@@ -50,6 +50,7 @@ class YoloApp:
                 if self.mirror:
                     img = cv.flip(img, 1)
                 self.capture_queue.put(img)
+                img = cv.cvtColor(img, cv.COLOR_BGR2RGB)
                 return self.model.preprocess(img)
 
     def process_model_output(self, *fmaps):

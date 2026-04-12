@@ -122,6 +122,7 @@ class poseApp:
     def generate_frame(self):
         while True:
             ok, frame = self.cam.read()
+            frame_rgb = cv.cvtColor(frame, cv.COLOR_BGR2RGB)
             # print(frame.shape)
             if not self.running.value:
                 print('EOF')
@@ -136,7 +137,7 @@ class poseApp:
                     if self.mirror:
                         frame = cv.flip(frame, 1)
                     self.capture_queue.put(frame)
-                    out, self.ratio = self.preprocess_image(frame)
+                    out, self.ratio = self.preprocess_image(frame_rgb)
                     return out
 
     def preprocess_image(self, image):

@@ -59,112 +59,110 @@ class YoloV26:
             self.preprocess(np.zeros(stream_img_size))
             self.stream_mode = True
 
-###################################################################################################
+
     def preprocess(self, img):
         """
-        YOLOv26 Pre-proccessing.
+        YOLOv26 Pre-processing.
         """
-        h0, w0 = img.shape[:2] # orig hw
+        h0, w0 = img.shape[:2]
+        self.orig_shape = (h0, w0)
 
-        r = self.input_size[0] / max(h0, w0)  # resize img to img_size
-        if r != 1:  
-            interp = cv2.INTER_AREA if r < 1  else cv2.INTER_LINEAR
+        r = self.input_size[0] / max(h0, w0)
+        if r != 1:
+            interp = cv2.INTER_AREA if r < 1 else cv2.INTER_LINEAR
             img = cv2.resize(img, (int(w0 * r), int(h0 * r)), interpolation=interp)
-        h, w = img.shape[:2]
 
-        img, ratio, dwdh = self._letterbox(img, new_shape=self.input_size, auto=False)
-        img = img.astype(np.float32)
-        img /= 255.0 # Scale
+        img, _, dwdh = self._letterbox(img, new_shape=self.input_size, auto=False)
 
-        shapes = (h0, w0), ((h / h0, w / w0), dwdh)
+        img = img.astype(np.float32) / 255.0
 
-        if not self.stream_mode:
-            self.ratio = r
-            self.pad = dwdh
+        # Always store these because postprocess needs them
+        self.ratio = r
+        self.pad = dwdh
 
-        # Update input shape to what the original ONNX model expects ie B,C,H,W
-        img = np.transpose(img, (2,0,1))
+        # HWC -> BCHW
+        img = np.transpose(img, (2, 0, 1))
         img = np.expand_dims(img, axis=0)
 
         return img
-    
-###################################################################################################
+
+
     def _letterbox(self, im, new_shape=(640, 640), color=(114, 114, 114), auto=True, scaleup=False, stride=32):
         """
-        A letterbox function.
+        Letterbox image to target shape.
         """
-        shape = im.shape[:2]  # current shape [height, width]
+        shape = im.shape[:2]  # (h, w)
         if isinstance(new_shape, int):
             new_shape = (new_shape, new_shape)
 
-        # Scale ratio (new / old)
         r = min(new_shape[0] / shape[0], new_shape[1] / shape[1])
-        if not scaleup:  # only scale down, do not scale up (for better val mAP)
+        if not scaleup:
             r = min(r, 1.0)
 
-        # Compute padding
-        new_unpad = int(round(shape[1] * r)), int(round(shape[0] * r))
-        dw, dh = new_shape[1] - new_unpad[0], new_shape[0] - new_unpad[1]  # wh padding
+        new_unpad = (int(round(shape[1] * r)), int(round(shape[0] * r)))
+        dw = new_shape[1] - new_unpad[0]
+        dh = new_shape[0] - new_unpad[1]
 
-        if auto:  # minimum rectangle
-            dw, dh = np.mod(dw, stride), np.mod(dh, stride)  # wh padding
+        if auto:
+            dw, dh = np.mod(dw, stride), np.mod(dh, stride)
 
-        dw /= 2  # divide padding into 2 sides
+        dw /= 2
         dh /= 2
 
-        if shape[::-1] != new_unpad:  # resize
+        if shape[::-1] != new_unpad:
             im = cv2.resize(im, new_unpad, interpolation=cv2.INTER_LINEAR)
 
         top, bottom = int(round(dh - 0.1)), int(round(dh + 0.1))
         left, right = int(round(dw - 0.1)), int(round(dw + 0.1))
-        im = cv2.copyMakeBorder(im, top, bottom, left, right, cv2.BORDER_CONSTANT, value=color)  # add border
+
+        im = cv2.copyMakeBorder(im, top, bottom, left, right, cv2.BORDER_CONSTANT, value=color)
 
         return im, r, (dw, dh)
 
-###################################################################################################
+
     def postprocess(self, fmap):
         """
-        YOLOv26 Post-proccessing.
-        Output format: (1, 300, 6) where each detection is [x1, y1, x2, y2, confidence, class_id]
+        YOLOv26 Post-processing.
+        Output: (1, 300, 6), each detection = [x1, y1, x2, y2, confidence, class_id]
         """
-        
-        post_output = fmap[0]  # Shape: (1, 300, 6)
-        
-        # Check if output is empty
+        post_output = fmap[0]
+
         if len(post_output) == 0:
             return []
-        
-        # Get the detections array - shape (300, 6)
+
         detections = post_output[0]
-        
         dets = []
-        
-        # Iterate through each detection
+
+        h0, w0 = self.orig_shape
+
         for detection in detections:
-            # Extract values: [x1, y1, x2, y2, confidence, class_id]
             x1, y1, x2, y2, confidence, class_id = detection
-            
-            # Filter by confidence threshold
+
             if confidence < 0.4:
                 continue
-            
-            # Skip invalid detections (x1 < 0 often indicates padding/invalid detection)
-            if x1 < 0:
+
+            # Remove padding, then scale back to original image
+            x1 = (x1 - self.pad[0]) / self.ratio
+            x2 = (x2 - self.pad[0]) / self.ratio
+            y1 = (y1 - self.pad[1]) / self.ratio
+            y2 = (y2 - self.pad[1]) / self.ratio
+
+            # Clip to image bounds
+            x1 = max(0, min(x1, w0 - 1))
+            x2 = max(0, min(x2, w0 - 1))
+            y1 = max(0, min(y1, h0 - 1))
+            y2 = max(0, min(y2, h0 - 1))
+
+            if x2 <= x1 or y2 <= y1:
                 continue
-            
-            # Adjust for padding
-            unpad = np.array([x1, y1, x2, y2]) - np.array([self.pad[0], self.pad[1], self.pad[0], self.pad[1]])
-            x1_adj, y1_adj, x2_adj, y2_adj = (unpad / self.ratio).astype(int)
-            
-            # Create detection dictionary
-            det = {
-                'bbox': (int(x1_adj), int(y1_adj), int(x2_adj), int(y2_adj)),
+
+            dets.append({
+                'bbox': (int(x1), int(y1), int(x2), int(y2)),
                 'class': COCO_CLASSES[int(class_id)],
                 'class_idx': int(class_id),
                 'score': float(confidence)
-            }
-            dets.append(det)
-        
+            })
+
         return dets
 
 ###################################################################################################

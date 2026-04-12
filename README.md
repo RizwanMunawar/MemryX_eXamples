@@ -9,7 +9,7 @@
 </picture>
 
 
-[![MemryX SDK](https://img.shields.io/badge/MemryX%20SDK-2.1-brightgreen)](https://developer.memryx.com)
+[![MemryX SDK](https://img.shields.io/badge/MemryX%20SDK-2.2-brightgreen)](https://developer.memryx.com)
 [![Python Versions](https://img.shields.io/badge/Python-3.9%20|%203.10%20|%203.11%20|%203.12-blue)](https://www.python.org)
 [![C++](https://img.shields.io/badge/C++-17-blue)](https://en.cppreference.com)
 [![ONNX](https://img.shields.io/badge/ONNX-gray)](https://onnx.ai)
@@ -34,16 +34,32 @@ To ensure a smooth experience with MemryX solutions, follow these steps before d
 ## Get Started
 
 > [!IMPORTANT]
-> **MemryX SDK 2.1** is now released!
+> **MemryX SDK 2.2** is now released!
 > Please update to the [latest SDK version](https://developer.memryx.com/get_started/index.html) **before** proceeding with any of the examples.
 
+You can get started in one of two ways:
 
-### Step 1: Prepare Your System and Install the MemryX SDK
+### Option 1: Use the GUI Launcher
 
-Before working with the examples, ensure your system is correctly set up by installing the MemryX SDK.
+Use the [MemryX Examples Launcher](gui/README.md) for a browser-based way to explore and run examples locally.
+
+```bash
+python3 -m venv .venv
+source .venv/bin/activate
+pip install --extra-index-url https://developer.memryx.com/pip -e "memryx-examples-launcher[memryx-sdk] @ git+https://github.com/memryx/MemryX_eXamples.git@release"
+example_launcher
+```
+
+See the MemryX Examples Launcher [README](gui/README.md) for full setup and usage details.
+
+### Option 2: Browse the Repository and Run Examples Manually
+
+#### Step 1: Prepare your system and install the MemryX SDK
+
+Before working with the examples, ensure your system is correctly set up by installing the MemryX SDK.  
 Follow the detailed instructions here: [**MemryX SDK Get Started Guide**](https://developer.memryx.com/get_started/index.html).
 
-### Step 2: Clone the MemryX eXamples Repository
+#### Step 2: Clone the MemryX eXamples repository
 
 Clone this repository plus any linked submodules with:
 
@@ -51,7 +67,12 @@ Clone this repository plus any linked submodules with:
 git clone --recursive https://github.com/memryx/memryx_examples.git
 ```
 
-## Example Categories
+#### Step 3: Run an example
+
+Open the example you are interested in and follow the installation and run instructions in its `README.md`.
+
+
+## Explore the Examples
 
 > [!NOTE]
 > Applications marked with **📝** have tutorials available. Clicking on the icon will take you directly to the tutorial page.
@@ -138,7 +159,7 @@ Leverage MemryX accelerators for **real-time video processing** tasks. These app
     </td>
     <!-- new cell -->
     <td align="center" valign="top" width="25%">
-      <a href="video_inference/pose_estimation_yolov8/README.md"><b>YOLOv8 Pose</b></a>
+      <a href="video_inference/pose_estimation_yolov8/README.md"><b>YOLOsv8 Pose</b></a>
       <a href="https://developer.memryx.com/tutorials/realtime_inf/realtime_pose.html">📝</a><br/>
       <a href="video_inference/pose_estimation_yolov8/README.md">
         <img src="video_inference/pose_estimation_yolov8/assets/pose_estimation.gif" style="height:165px; object-fit:cover;" />
@@ -707,7 +728,6 @@ Measure and evaluate the accuracy of various models using MemryX hardware.
 | [**Classification Accuracy**](accuracy_calculation/classification_resnet50/README.md) [📝](https://developer.memryx.com/accuracy/mlperf_accuracy/resnet50v1.5_mlperf_accuracy.html) | Calculate accuracy for classification models      | ResNet50         | ![python-badge] | <img src="https://upload.wikimedia.org/wikipedia/commons/3/35/Tux.svg"  width="20" height="20">
 | [**Object Detection Accuracy**](accuracy_calculation/detect_yolov8/README.md) [📝](https://developer.memryx.com/tutorials/accuracy/yolov8_accuracy/yolov8_accuracy.html) | Calculate accuracy for object detection models    | YOLOv8 (Medium)  | ![python-badge] | <img src="https://upload.wikimedia.org/wikipedia/commons/3/35/Tux.svg"  width="20" height="20">
 | [**Keras Classifiers Accuracy**](accuracy_calculation/keras_accuracy/README.md) [📝](https://developer.memryx.com/tutorials/accuracy/keras_classifiers_accuracy/keras_accuracy_rst.html) | Calculate Keras classifiers accuracy on the MXA    | Keras applications  | ![python-badge] | <img src="https://upload.wikimedia.org/wikipedia/commons/3/35/Tux.svg"  width="20" height="20">
-
 
 ## Useful Links
 
