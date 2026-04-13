@@ -38,12 +38,18 @@ void frameProducer(cv::VideoCapture& cap, std::atomic_bool& runflag, bool is_vid
             break;
         }
 
+        if (is_video) {
+            std::this_thread::sleep_for(std::chrono::milliseconds(30)); // Simulate ~30 FPS for video files
+        }
+
+        // --- Push to Cartoon Queue ---
         {
             std::lock_guard<std::mutex> lock(cartoon_mutex);
             cartoon_queue.push(frame.clone());
             cartoon_cv.notify_one();
         }
 
+        // --- Push to Pose Queue ---
         {
             std::lock_guard<std::mutex> lock(pose_mutex);
             pose_queue.push(frame.clone());
@@ -51,26 +57,6 @@ void frameProducer(cv::VideoCapture& cap, std::atomic_bool& runflag, bool is_vid
         }
     }
 
-    if (is_video) {
-        std::cout << "[Producer] Waiting for queues to flush before exiting...\n";
-
-        while (runflag.load()) {
-            std::unique_lock<std::mutex> lock1(cartoon_mutex, std::defer_lock);
-            std::unique_lock<std::mutex> lock2(pose_mutex, std::defer_lock);
-            std::lock(lock1, lock2);
-
-            if (cartoon_queue.empty() && pose_queue.empty())
-                break;
-
-            lock1.unlock();
-            lock2.unlock();
-            std::this_thread::sleep_for(std::chrono::milliseconds(100));
-        }
-
-        std::cout << "[Producer] Flush wait done or interrupted. Proceeding to shutdown...\n";
-    }
-
-    runflag.store(false);
     cartoon_cv.notify_all();
     pose_cv.notify_all();
 }
@@ -79,6 +65,9 @@ void frameProducer(cv::VideoCapture& cap, std::atomic_bool& runflag, bool is_vid
 int main(int argc, char* argv[]) {
     bool use_cam = false;
     std::string video_path;
+    std::string dfp_cartoon = "../../models/Facial_cartoonizer_512_512_3_onnx.dfp";
+    std::string dfp_pose = "../../models/YOLO_v8_small_pose_640_640_3_onnx.dfp";
+    std::string pose_post = "../../models/YOLO_v8_small_pose_640_640_3_onnx_post.onnx";
 
     // Init GUI
     MxQt gui(argc, argv);
@@ -86,15 +75,33 @@ int main(int argc, char* argv[]) {
 
     // Parse input arguments
     if (argc >= 2) {
-        std::string inputType(argv[1]);
-        if (inputType == "--cam") {
-            use_cam = true;
-        } else if (inputType == "--video" && argc >= 3) {
-            video_path = argv[2];
-        } else {
-            std::cout << "Usage: ./cartoon_pose [--cam | --video <path>]\n";
+        // Create a vector of strings for easier iteration
+        std::vector<std::string> args(argv, argv + argc);
+    
+        for (size_t i = 1; i < args.size(); ++i) {
+            if (args[i] == "--cam") {
+                use_cam = true;
+            } else if (args[i] == "--video" && i + 1 < args.size()) {
+                video_path = args[++i];
+            } else if (args[i] == "--dfp_cartoon" && i + 1 < args.size()) {
+                dfp_cartoon = args[++i];
+            } else if (args[i] == "--dfp_pose" && i + 1 < args.size()) {
+                dfp_pose = args[++i];
+            } else if ((args[i] == "--post" || args[i] == "-post") && i + 1 < args.size()) {
+                pose_post = args[++i];
+            } else {
+                std::cout << "Unknown or incomplete argument: " << args[i] << "\n";
+                std::cout << "Usage: ./cartoon_pose [--cam] [--video <path>] [--dfp_cartoon <path>] [--dfp_pose <path>] [--post <path>]\n";
+                return -1;
+            }
+        }
+    
+        // Validation: Ensure we have an input source
+        if (!use_cam && video_path.empty()) {
+            std::cout << "Error: Must specify either --cam or --video <path>\n";
             return -1;
         }
+    
     } else {
         std::cout << "Usage: ./cartoon_pose [--cam | --video <path>]\n";
         return -1;
@@ -114,13 +121,9 @@ int main(int argc, char* argv[]) {
     }
 
     // Accelerator options
-    MX::RPC::SchedulerOptions sched_opts{
-        30,   // frame_limit: Max frames before DFP swap
-        0,    // time_limit (ms): No time-based swap limit
-        20,   // ifmap_queue_size: Input queue capacity
-        20    // ofmap_queue_size: Output queue capacity per client
-    };
-
+    MX::RPC::SchedulerOptions sched_opts;
+    sched_opts.frame_limit = 10;  // Max frames before DFP swap
+    
     MX::RPC::ClientOptions client_opts{
         true,  // smoothing: Enable FPS smoothing
         30.0f  // fps_target: Limit input pacing to 30 FPS
@@ -128,13 +131,13 @@ int main(int argc, char* argv[]) {
 
     // Cartoon pipeline
     std::vector<int> cartoon_device = {0};
-    MX::Runtime::MxAccl accl_cartoon("Facial_cartoonizer_512_512_3_onnx.dfp", cartoon_device, {false, false}, false, sched_opts, client_opts);
+    MX::Runtime::MxAccl accl_cartoon(dfp_cartoon, cartoon_device, {false, false}, false, sched_opts, client_opts);
     CartoonApp cartoonApp(&accl_cartoon, &cartoon_queue, &cartoon_mutex, &cartoon_cv, &runflag, &gui, 0);
 
     // Pose pipeline
     std::vector<int> pose_device = {0};
-    MX::Runtime::MxAccl accl_pose("YOLO_v8_small_pose_640_640_3_onnx.dfp", pose_device, {true, true}, false, sched_opts, client_opts);
-    PoseApp poseApp(&accl_pose, "YOLO_v8_small_pose_640_640_3_onnx_post.onnx", &pose_queue, &pose_mutex, &pose_cv, &runflag, &gui, 1);
+    MX::Runtime::MxAccl accl_pose(dfp_pose, pose_device, {true, true}, false, sched_opts, client_opts);
+    PoseApp poseApp(&accl_pose, pose_post, &pose_queue, &pose_mutex, &pose_cv, &runflag, &gui, 1);
 
     // std::thread producer_thread(frameProducer, std::ref(vcap), std::ref(runflag));
     std::thread producer_thread(frameProducer, std::ref(vcap), std::ref(runflag), !use_cam);
@@ -144,18 +147,12 @@ int main(int argc, char* argv[]) {
 
     gui.Run();
     std::cout << "[Main] GUI exited. Shutting down..." << std::endl;
+
     runflag.store(false);
 
-    // Force exit after 5 seconds if cleanup hangs
-    std::thread force_exit_thread([&]() {
-        std::this_thread::sleep_for(std::chrono::seconds(5));
-        std::cerr << "[Main] Force exit timeout reached, terminating..." << std::endl;
-        std::exit(0);
-    });
-    force_exit_thread.detach();
-
-    accl_pose.wait();
     accl_cartoon.wait();
+    accl_pose.wait();
+
     accl_pose.stop();
     accl_cartoon.stop();
 

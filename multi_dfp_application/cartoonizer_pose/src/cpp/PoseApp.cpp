@@ -54,14 +54,22 @@ PoseApp::PoseApp(MX::Runtime::MxAccl* accl,
 }
 
 bool PoseApp::incallback_getframe(std::vector<const MX::Types::FeatureMap*> dst, int streamLabel) {
-    if (!runflag->load()) return false;
+    if (!runflag->load()) {
+        std::cout << "[PoseApp] Runflag false in input callback. Exiting stream.\n";
+        return false;
+    }
+    
 
     cv::Mat inframe;
     {
         std::unique_lock<std::mutex> lock(*queue_mutex);
         queue_cv->wait(lock, [&]() { return !frame_queue->empty() || !runflag->load(); });
 
-        if (!runflag->load()) return false;
+        if (!runflag->load()) {
+            std::cout << "[PoseApp] Runflag false in input callback. Exiting stream.\n";
+            return false;
+        }
+        
         inframe = frame_queue->front().clone();
         frame_queue->pop();
     }

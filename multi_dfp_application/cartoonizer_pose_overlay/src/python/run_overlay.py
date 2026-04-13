@@ -9,6 +9,7 @@ from displayer import DisplayerWithCheckboxes
 from threading import Thread, Event
 import signal
 from constant import *
+import time
 
 # Shared flag to control thread execution
 stop_flag = Event()
@@ -19,15 +20,18 @@ def signal_handler(sig, frame):
     stop_flag.set()
 
 
-def shared_capture_loop(displayer, src, queues, stop_flag):
+def shared_capture_loop(displayer, src, src_is_cam, queues, stop_flag):
     frame_id = 0
 
     cap = cv.VideoCapture(src)
-    is_cam = isinstance(src, int) or ((isinstance(src, str) and src.startswith("/dev/video")))
 
     while not stop_flag.is_set():
-        ret, frame = cap.read()
-        if not ret:
+
+        if not src_is_cam:
+            time.sleep(0.03)  # small delay to simulate real-time capture for video files
+        
+        ok, frame = cap.read()
+        if not ok:
             break
 
         displayer.update_buffer(frame_id, RAW_FRAME_NAME, frame)
@@ -39,7 +43,7 @@ def shared_capture_loop(displayer, src, queues, stop_flag):
 
     cap.release()
 
-    if not is_cam:
+    if not src_is_cam:
         stop_flag.set()
 
 
@@ -55,7 +59,7 @@ def parse_args():
         "--frame_limit",
         "-f",
         type=int,
-        default=24,
+        default=10,
         help="Number of frames to process before swapping out.",
     )
     parser.add_argument(
@@ -123,15 +127,13 @@ def main():
     # Start the capture process
     capture_thread = Thread(
         target=shared_capture_loop,
-        args=(displayer, input_source, [queue_cartoonizer, queue_pose], stop_flag),
+        args=(displayer, input_source, src_is_cam, [queue_cartoonizer, queue_pose], stop_flag),
     )
 
     # Setup SchedulerOptions for AsyncAccl
     sche_opts = SchedulerOptions()
     sche_opts.frame_limit = args.frame_limit
-    sche_opts.ifmap_queue_size = 22
-    sche_opts.ofmap_queue_size = 30
-
+    
     # Initialize AsyncAccl for pose estimation and cartoonizer
     accl_cartoonizer = AsyncAccl(args.dfp_cartoon, scheduler_options=sche_opts)
     accl_pose = AsyncAccl(args.dfp_pose, scheduler_options=sche_opts)
