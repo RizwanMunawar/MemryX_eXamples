@@ -108,11 +108,27 @@ The app supports the following command-line arguments:
 - `--nms`: NMS/IoU threshold for filtering overlapping boxes (default: `0.45`)
 - `--display_size`: Display window size as WIDTHxHEIGHT (e.g., `1920x1080`)
 
+## Model Accuracy 
+
+The model was retrained using the [Smoke & Fire Detection YOLO Dataset](https://www.kaggle.com/datasets/sayedgamal99/smoke-fire-detection-yolo) on a YOLOv11n model to improve detection performance for fire and smoke scenarios.
+
+### Evaluation Metrics
+
+| Class  | Images | Instances | Precision | Recall | mAP50 | mAP50-95 |
+|--------|--------|-----------|-----------|--------|-------|-----------|
+| All    | 3099   | 3932      | 0.787     | 0.721  | 0.782 | 0.463     |
+| Smoke  | 1550   | 1756      | 0.821     | 0.786  | 0.838 | 0.528     |
+| Fire   | 879    | 2176      | 0.752     | 0.655  | 0.725 | 0.398     |  
+   
+  
+
+>Note: Performance may vary depending on lighting conditions, smoke density, and scene complexity.
+
 ## Third-Party Licenses
 
 *This project utilizes third-party videos and data sources. The licenses for these dependencies are outlined below:*
 
-- **Model**: [YOLOv8s-Detection from Ultralytics](https://docs.ultralytics.com/models/yolov8/), Copyright (c) Ultralytics, 
+- **Model**: [YOLOv11n-Detection from Ultralytics](https://docs.ultralytics.com/models/yolo11/), Copyright (c) Ultralytics, 
   - [AGPL-3.0 License](https://github.com/ultralytics/ultralytics/blob/main/LICENSE) 🔗
 
 - **Code and Pre/Post-Processing**: Some code components, including pre/post-processing, were sourced from [Ultralytics GitHub](https://github.com/ultralytics/ultralytics),
