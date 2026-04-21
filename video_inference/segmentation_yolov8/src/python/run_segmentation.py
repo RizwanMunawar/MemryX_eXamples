@@ -29,8 +29,8 @@ class App:
         self.done = False
 
         # Stream-related containers and initialization
-        self.cap_queue = Queue(maxsize=50)
-        self.dets_queue = Queue(maxsize=50)
+        self.cap_queue = Queue(maxsize=5)
+        self.dets_queue = Queue(maxsize=5)
         self.model_type = model_type
         
         # FPS calculation related

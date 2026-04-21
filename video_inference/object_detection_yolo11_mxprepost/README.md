@@ -94,7 +94,7 @@ If no arguments are provided, the script will use the default post-processing mo
 
 ## Tutorial
 
-A more detailed tutorial with complete code explanations is available on the [MemryX Developer Hub](https://developer.memryx.com). You can find it [here](https://developer.memryx.com/tutorials/realtime_inf/mxprepost.html)
+A more detailed tutorial with complete code explanations is available on the [MemryX Developer Hub](https://developer.memryx.com). You can find it [here](https://developer.memryx.com/tutorials/realtime_inf/realtime_od_yolo11.html)
 
 
 ## Third-Party License

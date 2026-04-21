@@ -67,7 +67,7 @@ def _resolve_repo_root() -> Path:
 
 REPO_ROOT = _resolve_repo_root()
 README_PATH = REPO_ROOT / "README.md"
-GITHUB_BASE = "https://github.com/memryx/memryx_examples_internal/tree/release/"
+GITHUB_BASE = "https://github.com/memryx/MemryX_eXamples/blob/release/"
 
 EXAMPLE_BLACKLIST = [
     "Mario RL",       

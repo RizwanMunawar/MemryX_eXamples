@@ -33,6 +33,7 @@ dependencies = [
 [project.optional-dependencies]
 memryx-sdk = [
     "memryx",
+    "mxprepost",
 ]
 
 [project.scripts]
